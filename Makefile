@@ -1,5 +1,5 @@
 NAME = minishell
-LIBFT =	libft/libft.a
+LIBFT =	Libft/libft.a
 CC = gcc
 INC = -I ./
 SRCS =	*.c
@@ -8,9 +8,9 @@ SRCS =	*.c
 OBJS = $(SRC:.c=.o)
 all: $(NAME)
 $(NAME): $(OBJS) $(LIBFT)
-	@$(CC) -lreadline $(INC) $(SRCS) -o $(NAME) $(LIBFT) 
+	@$(CC) -lreadline $(INC) $(SRCS) -o $(NAME) $(LIBFT)
 $(LIBFT):
-	@make -C ./libft
+	@make -C ./Libft
 clean:
 	@rm -f $(OBJS)
 	@make clean -C ./libft

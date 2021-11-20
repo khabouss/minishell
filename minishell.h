@@ -15,8 +15,28 @@
 # define MINISHELL_H
 
 #include <stdlib.h>
+#include <unistd.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <fcntl.h>
 #include <readline/readline.h>
-#include "libft/libft.h"
+#include <readline/history.h>
+#include "Libft/libft.h"
+
+typedef struct s_list {
+  char **args;
+  char *env;
+  char *env_key;
+  char *env_value;
+  char *path;
+  struct s_list * next;
+} t_list;
+
+
+int		ft_strcmp(char *s1, char *s2);
+int		ft_strlen2(char **w);
+void	ft_putstr(char *s);
 
 #endif
