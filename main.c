@@ -373,7 +373,22 @@ void handle(char **args, t_list *env_list)
     {
         check_fill_path(head,env_list,args);
         if (ft_strchr(args[i], '/'))
+        {
 		    head->path = args[i];
+            if(args[i][0] == '.' && args[i][1] == '.')
+            {
+                char *pwd = NULL;
+                if(chdir(args[i])!= 0)
+                    ft_putstr("Error\n");
+                
+                pwd = getcwd(pwd,0);
+
+                searchch("PWD",pwd,env_list);
+                
+                searchch("OLDPWD",path,env_list);
+            }
+
+        }
         ft_exec(head,args);
     }
 
