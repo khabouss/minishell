@@ -129,20 +129,38 @@ char* searchch(char *word,char *changed,t_list *env_list)
     return(current->env_value);
 }
 
+
+char *get_home_incd(t_list *env_list)
+{
+    t_list *current = env_list;
+    char *home;
+    while(current != NULL)
+    {
+        if(ft_strcmp(current->env_key,"HOME") == 0)
+        {
+            home = current->env_value;
+            break;
+        }
+        current = current->next;
+    }
+    return (home);
+}
+
 void    ft_cd(char **args,char *path, t_list *env_list)
 {
     char *pwd = NULL;
 
+    char *home = get_home_incd(env_list);
+    if(!args[1])
+        args[1] = home;
     if(chdir(args[1])!= 0)
         ft_putstr("Error\n");
     
     pwd = getcwd(pwd,0);
 
     searchch("PWD",pwd,env_list);
-    // ft_putstr("\n");
     
     searchch("OLDPWD",path,env_list);
-    // ft_putstr("\n");
 }
 
 
@@ -206,7 +224,7 @@ void    addto_list(char *args,t_list *env_list)
         }
         current = current->next;
     }
-    if(!b)
+    if(args)
         ft_lstadd_back(&env_list,add_content(s));
 }
 
@@ -295,7 +313,6 @@ int     check_fill_path(t_list *head,t_list *env_list,char **args)
         }
         current = current->next;
     }
-	// node->path = NULL;
     return (0);
 }
 
@@ -355,6 +372,8 @@ void handle(char **args, t_list *env_list)
     else
     {
         check_fill_path(head,env_list,args);
+        if (ft_strchr(args[i], '/'))
+		    head->path = args[i];
         ft_exec(head,args);
     }
 
