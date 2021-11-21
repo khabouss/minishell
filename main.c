@@ -12,9 +12,25 @@
 
 #include "minishell.h"
 
+int sig;
 
 
-void ft_echo(char **args)
+void    checkdollar(char *vrenv,t_list *env_list)
+{
+    t_list *current = env_list;
+    while(current != NULL)
+    {
+        if(ft_strcmp(current->env_key,vrenv) == 0)
+        {
+            ft_putstr(current->env_value);
+            // ft_putstr("\n");
+            break;
+        }
+        current = current->next;
+    }
+}
+
+void ft_echo(char **args,t_list *env_list)
 {
     int i;
     int check_n;
@@ -31,7 +47,14 @@ void ft_echo(char **args)
     }
     while(i < argc && args[i][0] != '|')
     {
-        ft_putstr(args[i]);
+        if(args[i][0] == '$')
+        {
+            int len = ft_strlen(args[i]);
+            char *vrenv = ft_substr(args[i],1,len);
+            checkdollar(vrenv,env_list);
+        }
+        else
+            ft_putstr(args[i]);
         i++;
         if(args[i])
             ft_putstr(" ");
@@ -118,7 +141,7 @@ void    ft_cd(char **args,char *path, t_list *env_list)
     searchch("PWD",pwd,env_list);
     // ft_putstr("\n");
     
-    // searchch("OLDPWD",path,env_list);
+    searchch("OLDPWD",path,env_list);
     // ft_putstr("\n");
 }
 
@@ -295,7 +318,7 @@ void    ft_exec(t_list *head,char **args)
 {
     int pid = fork();
     int status;
-
+    sig =2;
    if (pid == -1)
    {
         ft_putstr("Error\n");
@@ -318,7 +341,7 @@ void handle(char **args, t_list *env_list)
     char *path = NULL;
     path = getcwd(path,0);
     if (ft_strcmp("echo",args[i]) == 0)
-        ft_echo(args);
+        ft_echo(args,env_list);
     else if (ft_strcmp("cd",args[i]) == 0)
         ft_cd(args,path,env_list);
     else if (ft_strcmp("pwd",args[i]) == 0)
@@ -341,31 +364,37 @@ void handle(char **args, t_list *env_list)
 #include <unistd.h>
 #include <signal.h>
 
-// static void sigintHandler(int sig)
-// {
-//     write(STDERR_FILENO, "\nPROMPT> \n", 15);
-//     exit(1);
-// }
+void handle_int(int sig_num)
+{
+    rl_on_new_line();
+    ft_putstr("\n");
+    rl_replace_line("", 0);
+    rl_redisplay();
+} 
+
+void handle_int1(int sig_num)
+{
+    if(sig == 2)
+        ft_putstr("Quit: 3\n");
+} 
 
 int main(int argc, char **argv, char **env)
 {
-
     char *str;
     char **args;
     t_list *env_list;
-
     env_list = fill_env(env);
-    // if (signal(SIGINT, sigintHandler))
-    //     ft_putstr("PROMPT> ");
-	// signal(SIGMINE,handle_int);
+
     while(1)
     {
+	signal(SIGINT,handle_int);
+	signal(SIGQUIT,handle_int1);
         str = readline("PROMPT> ");
+        if(str == NULL)
+            exit(0);
         add_history(str);
-        // signal(SIGINT, sig_handler);
         args = ft_split(str,' ');
         handle(args, env_list);
     }
-
     return (0);
 }

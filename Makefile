@@ -5,10 +5,11 @@ INC = -I ./
 SRCS =	*.c
 # FLAGS = #-Wall -Wextra -Werror -g 
 # FLAGS =
+USER = majdahim
 OBJS = $(SRC:.c=.o)
 all: $(NAME)
 $(NAME): $(OBJS) $(LIBFT)
-	@$(CC) -lreadline $(INC) $(SRCS) -o $(NAME) $(LIBFT)
+	@$(CC) -lreadline -L /Users/$(USER)/goinfre/.brew/opt/readline/lib -I /Users/$(USER)/goinfre/.brew/opt/readline/include $(INC) $(SRCS) -o $(NAME) $(LIBFT)
 $(LIBFT):
 	@make -C ./Libft
 clean:
