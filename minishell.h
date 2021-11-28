@@ -23,7 +23,14 @@
 #include <fcntl.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "Libft/libft.h"
+#include "libft/libft.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+
+# define PROMPT "minishell> "
+# define ENTRECODE printf("ENTRE CODE\n");
 
 typedef struct s_list {
   char **args;
@@ -37,6 +44,6 @@ typedef struct s_list {
 
 int		ft_strcmp(char *s1, char *s2);
 int		ft_strlen2(char **w);
-void	ft_putstr(char *s);
+void	ft_putstr(int fd, char *s);
 
 #endif

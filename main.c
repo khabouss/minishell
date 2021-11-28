@@ -12,25 +12,9 @@
 
 #include "minishell.h"
 
-int sig;
 
 
-void    checkdollar(char *vrenv,t_list *env_list)
-{
-    t_list *current = env_list;
-    while(current != NULL)
-    {
-        if(ft_strcmp(current->env_key,vrenv) == 0)
-        {
-            ft_putstr(current->env_value);
-            // ft_putstr("\n");
-            break;
-        }
-        current = current->next;
-    }
-}
-
-void ft_echo(char **args,t_list *env_list)
+void ft_echo(int fd, char **args)
 {
     int i;
     int check_n;
@@ -45,22 +29,15 @@ void ft_echo(char **args,t_list *env_list)
         sp = 1;
         i++;
     }
-    while(i < argc && args[i][0] != '|')
+    while(i < argc)
     {
-        if(args[i][0] == '$')
-        {
-            int len = ft_strlen(args[i]);
-            char *vrenv = ft_substr(args[i],1,len);
-            checkdollar(vrenv,env_list);
-        }
-        else
-            ft_putstr(args[i]);
+        ft_putstr(fd, args[i]);
         i++;
-        if(args[i])
-            ft_putstr(" ");
+        if(args[i] && args[i][0] != '\0')
+            ft_putstr(fd, " ");
     }
     if(sp == 0)
-        ft_putstr("\n");
+        ft_putstr(fd, "\n");
 }
 
 t_list    *fill_env(char **env)
@@ -94,23 +71,23 @@ t_list    *fill_env(char **env)
     return (head);
 }
 
-void    ft_env(t_list *env_list)
+void    ft_env(int fd, t_list *env_list)
 {
     t_list *current = env_list;
     while(current != NULL)
     {
-        ft_putstr(current->env_key);
-        ft_putstr("=");
-        ft_putstr(current->env_value);
-        ft_putstr("\n");
+        ft_putstr(fd, current->env_key);
+        ft_putstr(fd, "=");
+        ft_putstr(fd, current->env_value);
+        ft_putstr(fd, "\n");
         current = current->next;
     }
 }
-void ft_pwd()
+void ft_pwd(int fd)
 {
     char *r = NULL;
-    ft_putstr(getcwd(r,1));
-    ft_putstr("\n");
+    ft_putstr(fd, getcwd(r,1));
+    ft_putstr(fd, "\n");
 }
 
 char* searchch(char *word,char *changed,t_list *env_list)
@@ -129,51 +106,33 @@ char* searchch(char *word,char *changed,t_list *env_list)
     return(current->env_value);
 }
 
-
-char *get_home_incd(t_list *env_list)
-{
-    t_list *current = env_list;
-    char *home;
-    while(current != NULL)
-    {
-        if(ft_strcmp(current->env_key,"HOME") == 0)
-        {
-            home = current->env_value;
-            break;
-        }
-        current = current->next;
-    }
-    return (home);
-}
-
-void    ft_cd(char **args,char *path, t_list *env_list)
+void    ft_cd(int fd, char **args,char *path, t_list *env_list)
 {
     char *pwd = NULL;
 
-    char *home = get_home_incd(env_list);
-    if(!args[1])
-        args[1] = home;
     if(chdir(args[1])!= 0)
-        ft_putstr("Error\n");
+        ft_putstr(fd, "Error\n");
     
     pwd = getcwd(pwd,0);
 
     searchch("PWD",pwd,env_list);
+    // ft_putstr("\n");
     
-    searchch("OLDPWD",path,env_list);
+    // searchch("OLDPWD",path,env_list);
+    // ft_putstr("\n");
 }
 
 
-void    print_list(t_list *env_list)
+void    print_list(int fd, t_list *env_list)
 {
     t_list *current = env_list;
     while(current != NULL)
     {
-        ft_putstr("declare -x ");
-        ft_putstr(current->env_key);
-        ft_putstr("=\"");
-        ft_putstr(current->env_value);
-        ft_putstr("\"\n");
+        ft_putstr(fd, "declare -x ");
+        ft_putstr(fd, current->env_key);
+        ft_putstr(fd, "=\"");
+        ft_putstr(fd, current->env_value);
+        ft_putstr(fd, "\"\n");
         current = current->next;
     }
 }
@@ -224,11 +183,11 @@ void    addto_list(char *args,t_list *env_list)
         }
         current = current->next;
     }
-    if(args)
+    if(!b)
         ft_lstadd_back(&env_list,add_content(s));
 }
 
-void ft_export(char **args,t_list *env_list)
+void ft_export(int fd, char **args,t_list *env_list)
 {
     int i = 0;
     if(args)
@@ -237,7 +196,7 @@ void ft_export(char **args,t_list *env_list)
             addto_list(args[i],env_list);
     }
     if(!args[1])
-        print_list(env_list);
+        print_list(fd, env_list);
 }
 
 
@@ -279,13 +238,12 @@ void    ft_unset(char **args,t_list *env_list)
 }
 
 
-int     check_fill_path(t_list *head,t_list *env_list,char **args)
+char*     check_fill_path(t_list *env_list,char **args)
 {
     int     i;
     char    **w;
     char    *s;
     int     fd;
-    // t_list *head;
     i = 0;
     fd = 0;
 	s = NULL;
@@ -302,9 +260,8 @@ int     check_fill_path(t_list *head,t_list *env_list,char **args)
                 fd = open(s, O_RDONLY);
                 if (fd > 0)
                 {
-                    head->path = s;
 					close(fd);
-                    return (1);
+                    return (s);
                 }
 				close(fd);
 				free(s);
@@ -316,119 +273,273 @@ int     check_fill_path(t_list *head,t_list *env_list,char **args)
     return (0);
 }
 
-char    **fill_paramlist(t_list *head,char **args)
+char    **fill_paramlist(char *path,char **args, int len, int len_filtered)
 {
     int     i;
+    int     j;
     char    **w;
 
     i = 0;
-    w = malloc(sizeof(char *) * 3);
-    w[0] = ft_strdup(head->path);
-    if (args[1])
-        w[1] = ft_strdup(args[1]);
-    else
-        w[1] = NULL;
+    j = 0;
+    w = malloc(sizeof(char *) * (len_filtered + 1));
+    while (i < len)
+    {
+        if (args[i][0] != '\0')
+        {
+            w[j] = ft_strdup(args[i]);
+            j++;
+        }
+        i++;
+    }
+    w[j] = NULL;
     return (w);
 }
 
-void    ft_exec(t_list *head,char **args)
+int    ft_heredoc(char **args, int i, int old)
 {
-    int pid = fork();
-    int status;
-    sig =2;
-   if (pid == -1)
-   {
-        ft_putstr("Error\n");
-        exit(0);
-    }
-    if(pid == 0)
-    {
-        execve(head->path,fill_paramlist(head,args), NULL);
-        sleep(2);
-        exit(EXIT_SUCCESS);
-    }
-    wait(&status);
-}
+    if (old != -1)
+        dup2(old, 0);
+    char *eof;
+    char *input;
+    char *buff;
+    char *temp;
+    int fd;
 
-void handle(char **args, t_list *env_list)
-{
-    int i;
-    t_list *head;
-    i = 0;
-    char *path = NULL;
-    path = getcwd(path,0);
-    if (ft_strcmp("echo",args[i]) == 0)
-        ft_echo(args,env_list);
-    else if (ft_strcmp("cd",args[i]) == 0)
-        ft_cd(args,path,env_list);
-    else if (ft_strcmp("pwd",args[i]) == 0)
-        ft_pwd();
-    else if (ft_strcmp("env",args[i]) == 0)
-        ft_env(env_list);
-    else if (ft_strcmp("unset",args[i]) == 0)
-        ft_unset(args,env_list);
-    else if (ft_strcmp("export",args[i]) == 0)
-        ft_export(args,env_list);
+
+    if (args[i][2] != '\0')
+        eof = ft_substr(args[i], 2, ft_strlen(args[i]) - 2);
     else
     {
-        check_fill_path(head,env_list,args);
-        if (ft_strchr(args[i], '/'))
-        {
-		    head->path = args[i];
-            if(args[i][0] == '.' && args[i][1] == '.')
-            {
-                char *pwd = NULL;
-                if(chdir(args[i])!= 0)
-                    ft_putstr("Error\n");
-                
-                pwd = getcwd(pwd,0);
-
-                searchch("PWD",pwd,env_list);
-                
-                searchch("OLDPWD",path,env_list);
-            }
-
-        }
-        ft_exec(head,args);
+        eof = ft_strdup(args[i + 1]);
+        args[i+1][0] = '\0';
     }
-
+    input = NULL;
+    buff = "";
+    fd = open("heredoc_temp", O_CREAT | O_RDWR | O_TRUNC, 0666);
+    while (ft_strcmp(input, eof) != 0)
+    {
+        input = readline("> ");
+        if (ft_strcmp(input, eof) != 0)
+        {
+            buff = ft_strjoin(buff, input);
+            buff = ft_strjoin(buff, "\n");
+        }
+    }
+    write(fd, buff, ft_strlen(buff) - 1);
+    if (ft_strlen(buff) > 1)
+        write(fd, "\n", 1);
+    close(fd);
+    args[i][0] = '\0';
+    fd = open("heredoc_temp", O_RDWR, 0666);
+    int old_stdin = dup(STDIN_FILENO);
+    dup2(fd, STDIN_FILENO);
+    return (old_stdin);
 }
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
 
-void handle_int(int sig_num)
+int    update_out(char **args)
 {
-    rl_on_new_line();
-    ft_putstr("\n");
-    rl_replace_line("", 0);
-    rl_redisplay();
-} 
+    int i;
+    char *file_name;
+    int fd;
+    int is_double;
+    int in;
+    int old_stdin;
 
-void handle_int1(int sig_num)
+    in = -1;
+
+    i = 0;
+    old_stdin = -1;
+    while (args[i])
+    {
+        is_double = 0;
+        if (args[i][0] == '>')
+        {
+            in = 0;
+            if (args[i][1] == '>')
+                is_double = 1;
+            if (args[i][1 + is_double] != '\0')
+                file_name = ft_substr(args[i], 1 + is_double, ft_strlen(args[i]) - 1 - is_double);
+            else
+            {
+                file_name = ft_strdup(args[i+1]);
+                args[i+1][0] = '\0';
+            }
+            if (is_double == 0)
+                fd = open(file_name, O_CREAT | O_RDWR | O_TRUNC , 0666);
+            else
+                fd = open(file_name, O_CREAT | O_RDWR | O_APPEND , 0666);
+            args[i][0] = '\0';
+        }
+        if (args[i][0] == '<' && args[i][1] != '<')
+        {
+            in = 1;
+            if (args[i][1] != '\0')
+                file_name = ft_substr(args[i], 1, ft_strlen(args[i]) - 1);
+            else
+            {
+                file_name = ft_strdup(args[i+1]);
+                args[i+1][0] = '\0';
+            }
+            fd = open(file_name, O_RDWR, 0666);
+            if (fd == -1)
+            {
+                printf("minishell: %s: No such file or directory\n", file_name);
+                return (-1);
+            }
+            args[i][0] = '\0';
+        }
+        if (args[i][0] == '<' && args[i][1] == '<')
+            old_stdin = ft_heredoc(args, i, old_stdin);
+        i++;
+    }
+    if (in == 0)
+        dup2(fd, STDOUT_FILENO);
+    if (in == 1)
+        dup2(fd, STDIN_FILENO);
+    return (1);
+}
+
+void    ft_execve(char *str_pips, t_list *env_list, char **env)
 {
-    if(sig == 2)
-        ft_putstr("Quit: 3\n");
-} 
+    char *path;
+    char **args;
+    int args_len;
+    int args_len_filtered;
+    int i = 0;
+
+    path = getcwd(path,0);
+    args = ft_split(str_pips, ' ');
+    args_len = 0;
+    args_len_filtered = 0;
+    while (args[args_len])
+        args_len++;
+    if (update_out(args) == -1)
+        exit(EXIT_FAILURE);
+    while (i < args_len)
+    {
+        if (args[i][0] != '\0')
+            args_len_filtered++;
+        i++;
+    }
+    if (ft_strcmp("echo",args[0]) == 0)
+        ft_echo(STDOUT_FILENO, args);
+    else if (ft_strcmp("cd",args[0]) == 0)
+        ft_cd(STDOUT_FILENO, args,path,env_list);
+    else if (ft_strcmp("pwd",args[0]) == 0)
+        ft_pwd(STDOUT_FILENO);
+    else if (ft_strcmp("env",args[0]) == 0)
+        ft_env(STDOUT_FILENO, env_list);
+    else if (ft_strcmp("unset",args[0]) == 0)
+        ft_unset(args,env_list);
+    else if (ft_strcmp("export",args[0]) == 0)
+        ft_export(STDOUT_FILENO, args,env_list);
+    else
+    {
+        path = check_fill_path(env_list, args);
+        char **_args = fill_paramlist(path, args, args_len, args_len_filtered);
+        execve(path, _args, env);   
+    }
+}
+
+int**    ft_pipe(int pips)
+{
+    int **pipe_fd;
+    int i;
+
+    pipe_fd = (int **)malloc(pips * sizeof(int *));
+    i = -1;
+    while (++i < pips)
+    {
+        pipe_fd[i] = (int *)malloc(2 * sizeof(int));
+        pipe(pipe_fd[i]);
+    }
+    return (pipe_fd);
+}
+
+
+void    ft_close(int i, int pips, int **pipe_fd)
+{
+    int j;
+
+    j = 0;
+    while (j < pips)
+    {
+        if (j != i - 1)
+            close(pipe_fd[j][0]);
+        if (j != i)
+            close(pipe_fd[j][1]);
+        j++;
+    }
+}
+
+void    ft_free2d(int **arr, int i)
+{
+    while (i--)
+        free(arr[i]);
+    free(arr);
+}
+
+void handle_pipe(char **str_pips, t_list *env_list, int pips, char **env)
+{
+    int **pipe_fd;
+    int status;
+    int i;
+
+    pipe_fd = ft_pipe(pips);
+    i = -1;
+    while (++i < pips + 1)
+    {
+        if (fork() == 0)
+        {
+            ft_close(i, pips, pipe_fd);
+            if (i != 0)
+                dup2(pipe_fd[i - 1][0], STDIN_FILENO);
+            if (i != pips)
+                dup2(pipe_fd[i][1], STDOUT_FILENO);
+            ft_execve(str_pips[i], env_list, env);
+            ft_putstr(STDOUT_FILENO, 0);
+            ft_close(-1, pips, pipe_fd);
+        }
+    }
+    ft_close(-1, pips, pipe_fd);
+    while (wait(&status) > 0);
+    ft_free2d(pipe_fd, pips);
+}
 
 int main(int argc, char **argv, char **env)
 {
-    char *str;
-    char **args;
-    t_list *env_list;
-    env_list = fill_env(env);
 
+    char *str;
+    char **str_pip;
+    t_list *env_list;
+    int pips;
+    int i;
+
+    env_list = fill_env(env);
     while(1)
     {
-	signal(SIGINT,handle_int);
-	signal(SIGQUIT,handle_int1);
-        str = readline("PROMPT> ");
-        if(str == NULL)
-            exit(0);
+        str = readline(PROMPT);
+        pips = 0;
+        i = 0;
         add_history(str);
-        args = ft_split(str,' ');
-        handle(args, env_list);
+        while (str[i] != '\0')
+        {
+            if (str[i] == '|')
+                pips++;
+            i++;
+        }
+        if (pips)
+        {
+            str_pip = ft_split(str, '|');
+            handle_pipe(str_pip, env_list, pips, /* NEW */env);
+        }
+        else
+        {
+            if (fork() == 0)
+                ft_execve(str, env_list, /* NEW */env);
+            wait(NULL);    
+        }
+        
     }
     return (0);
 }
