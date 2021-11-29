@@ -336,6 +336,116 @@ int    ft_heredoc(char **args, int i, int old)
     return (old_stdin);
 }
 
+int num_of_cmds(char *str)
+{
+    int i;
+    int cmds;
+
+    i = 0;
+    cmds = 0;
+    while (str[i] != '\0')
+    {
+        while (str[i] != '\0' && str[i] != ' ' && str[i] != '\"' && str[i] != '\'')
+            i++;
+        if (str[i] == ' ' || str[i] == '\0')
+        {
+            if (i != 0)
+                cmds++;
+            while (str[i] == ' ')
+                i++;
+        }
+        if (str[i] == '\"')
+        {
+            i++;
+            while (str[i] && str[i] != '\"')
+                i++;
+            if (str[i] == '\0')
+                return (-1);
+            if (str[i] == '\"')
+                i++;
+            if (str[i] == '\0')
+                cmds++;
+        }
+        if (str[i] == '\'')
+        {
+            i++;
+            while (str[i] && str[i] != '\'')
+                i++;
+            if (str[i] == '\0')
+                return (-1);
+            if (str[i] == '\'')
+                i++;
+            if (str[i] == '\0')
+                cmds++;
+        }
+    }
+    return cmds;
+}
+
+int     get_start(char *str, int i)
+{
+    int j;
+
+    j = i;
+    while (j)
+    {
+        if (str[j] && str[j] == ' ')
+            return (j);
+        j--;
+    }
+    return (j);
+}
+
+char **get_args(char *str)
+{
+    char **args;
+    int j;
+    int i;
+    int index[2];
+
+    i = 0;
+    j = 0;
+    args = (char **)malloc(num_of_cmds(str) * sizeof(char *));
+    while (str[i] != '\0')
+    {
+        while (str[i] != '\0' && str[i] != ' ' && str[i] != '\"' && str[i] != '\'')
+            i++;
+        if (str[i] == ' ' || str[i] == '\0')
+        {
+            if (i != 0)
+                args[j++] = ft_substr(str, get_start(str, i), i);
+            while (str[i] == ' ')
+                i++;
+        }
+        if (str[i] == '\"')
+        {
+            i++;
+            while (str[i] && str[i] != '\"')
+                i++;
+            if (str[i] == '\0')
+                return (NULL);
+            if (str[i] == '\"')
+                i++;
+            if (str[i] == '\0')
+                args[j++] = ft_substr(str, get_start(str, i), i);
+        }
+        if (str[i] == '\'')
+        {
+            i++;
+            while (str[i] && str[i] != '\'')
+                i++;
+            if (str[i] == '\0')
+                return (NULL);
+            if (str[i] == '\'')
+                i++;
+            if (str[i] == '\0')
+                args[j++] = ft_substr(str, get_start(str, i), i);
+        }
+    }
+    
+    return args;
+}
+
 int    update_out(char **args)
 {
     int i;
