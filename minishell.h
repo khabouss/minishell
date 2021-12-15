@@ -28,6 +28,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+# include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdlib.h> 
 
 # define PROMPT "minishell> "
 # define ENTRECODE printf("ENTRE CODE\n");

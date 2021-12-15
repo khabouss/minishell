@@ -79,20 +79,20 @@ void	*ft_realloc(void *ptr, size_t old_size, size_t new_size)
 	return (new);
 }
 
-char	**ft_realloc_2(char **old, size_t old_size, size_t new_size)
-{
-	char **new;
-	int		i;
+// char	**ft_realloc_2(char **old, size_t old_size, size_t new_size)
+// {
+// 	char **new;
+// 	int		i;
 	
-	new = malloc(sizeof(char *) * (new_size + 1));
-	i = 0;
-	while (i < (int)old_size)
-	{
-		new[i] = old[i];
-		i++;
-	}
-	return new;
-}
+// 	new = malloc(sizeof(char *) * (new_size + 1));
+// 	i = 0;
+// 	while (i < (int)old_size)
+// 	{
+// 		new[i] = old[i];
+// 		i++;
+// 	}
+// 	return new;
+// }
 void	ft_putnbr(int fd, int n)
 {
 	unsigned int nb;
