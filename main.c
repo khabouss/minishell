@@ -655,16 +655,16 @@ void	ft_execve(char *str_pips, t_list *env_list, char **env)
 	args_len_filtered = 0;
 	if (!args)
 		return ;
-	while (args[args_len])
-		args_len++;
-	if (update_out(args) == -1)
-		exit(EXIT_FAILURE);
-	while (i < args_len)
-	{
-		if (args[i][0] != '\0' && args[i][0] != '.')
-			args_len_filtered++;
-		i++;
-	}
+	// while (args[args_len])
+	// 	args_len++;
+	// if (update_out(args) == -1)
+	// 	exit(EXIT_FAILURE);
+	// while (i < args_len)
+	// {
+	// 	if (args[i][0] != '\0' && args[i][0] != '.')
+	// 		args_len_filtered++;
+	// 	i++;
+	// }
 	path = check_fill_path(env_list, args);
 	if (ft_strcmp("echo", args[0]) == 0)
 		ft_echo(STDOUT_FILENO, args);
@@ -680,21 +680,22 @@ void	ft_execve(char *str_pips, t_list *env_list, char **env)
 		ft_export(STDOUT_FILENO, args, env_list);
 	else if (ft_strcmp("exit", args[0]) == 0)
 		exit(127);
-	else if (ft_strchr(args[0], '/'))
-	{
-		if (args[0][0] == '.' && args[0][1] == '.')
-		{
-			char *pwd = NULL;
-			if (chdir(args[0]) != 0)
-				ft_putstr(1, "Error\n");
-			pwd = getcwd(pwd, 0);
-			searchch("PWD", pwd, env_list);
-			searchch("OLDPWD", path, env_list);
-		}
-	}
 	else
 	{
-		path = check_fill_path(env_list, args);
+		if (ft_strchr(args[0], '/'))
+		{
+			path = args[0];
+			if (args[0][0] == '.' && args[0][1] == '.')
+			{
+				char *pwd = NULL;
+				if (chdir(args[0]) != 0)
+					ft_putstr(1, "Error\n");
+				pwd = getcwd(pwd, 0);
+				searchch("PWD", pwd, env_list);
+				searchch("OLDPWD", path, env_list);
+			}
+		}
+		// printf("%s\n",path);
 		args1 = fill_paramlist(path, args, args_len, args_len_filtered);
 		sig = 2;
 		if ((pid = fork()) == 0)
@@ -703,10 +704,23 @@ void	ft_execve(char *str_pips, t_list *env_list, char **env)
 			sleep(2);
 			exit(EXIT_SUCCESS);
 		}
-		waitpid(pid, &status, 0);
-		if (WIFSIGNALED(status))
-			printf("Error\n");
 	}
+	// else
+	// {
+		// printf("%s\n",path);
+		// path = check_fill_path(env_list, args);
+		// args1 = fill_paramlist(path, args, args_len, args_len_filtered);
+		// sig = 2;
+		// if ((pid = fork()) == 0)
+		// {
+		// 	execve(path, args, env);
+		// 	sleep(2);
+		// 	exit(EXIT_SUCCESS);
+		// }
+		// waitpid(pid, &status, 0);
+		// if (WIFSIGNALED(status))
+		// 	printf("Error\n");
+	// }
 }
 
 int	**ft_pipe(int pips)
@@ -795,6 +809,7 @@ int	main(int argc, char **argv, char **env)
 	int		pips;
 	int		i;
 	int		status;
+	char	**arg_pip;
 
 	env_list = fill_env(env);
 	while (1)
@@ -809,10 +824,21 @@ int	main(int argc, char **argv, char **env)
 		add_history(str);
 		while (str[i] != '\0')
 		{
-			if (str[i] == '|')
+			if (str[i] == '\"')
+			{
+			i++;
+			while (str[i] && str[i] != '\"')
+				i++;
+			if (str[i] == '\0')
+				return (-1);
+			if (str[i] == '\"')
+				i++;
+			}	
+			else if(str[i] == '|')
 				pips++;
 			i++;
 		}
+		// printf("%d\n",pips);
 		if (pips)
 		{
 			str_pip = ft_split(str, '|');
@@ -820,11 +846,11 @@ int	main(int argc, char **argv, char **env)
 		}
 		else
 		{
-			if (fork() == 0)
-			{
-				if (str[0] == '\n')
-					printf("dddd");
-			}
+			// if (fork() == 0)
+			// {
+			// 	if (str[0] == '\n')
+			// 		printf("dddd");
+			// }
 			ft_execve(str, env_list, env);
 			wait(&status);
 		}
