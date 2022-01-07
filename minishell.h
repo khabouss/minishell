@@ -47,6 +47,7 @@ typedef struct s_list {
   char *env_key;
   char *env_value;
   char *path;
+  int check_dollar;
   struct s_list * next;
 } t_list;
 
