@@ -1,9 +1,0 @@
-amine
-[?2004hminishell> 
-[?2004l[?2004hminishell> [?2004l
-minishell> [?2004h[H[2Jminishell> [H[2Jminishell> [H[2Jminishell> [H[2Jminishell> [?2004l
-minishell> [?2004h[?2004l
-minishell> [?2004h[H[2Jminishell> [H[2Jminishell> l[H[2Jminishell> l[H[2Jminishell> l[H[2Jminishell> l[Kminishell> l[Kminishell> l[Kminishell> l[?2004l
-minishell> [?2004h[?2004l
-minishell> [?2004h[?2004l
-minishell> [?2004h[?2004l
