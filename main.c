@@ -16,7 +16,7 @@ int		sig;
 
 void	ft_echo(int fd, char **args)
 {
-	int		i;
+	int		i, j = 1;
 	int		check_n;
 	int		argc;
 	int		sp;
@@ -25,10 +25,15 @@ void	ft_echo(int fd, char **args)
 	argc = ft_strlen2(args);
 	check_n = 0;
 	i = 1;
-	while (ft_strcmp("-n", args[i]) == 0)
+	while (args[i][0] == '-')
 	{
-		sp = 1;
-		i++;
+		while (args[i][j] == 'n')
+			j++;
+		if (args[i][j] == '\0')
+		{
+			sp = 1;
+			i++;
+		}
 	}
 	while (i < argc)
 	{
@@ -743,7 +748,7 @@ void	ft_free2d(int **arr, int i)
 {
 	while (i--)
 		free(arr[i]);
-	free(arr);
+
 }
 
 void	handle_pipe(char **str_pips, t_list *env_list, int pips, char **env)
@@ -770,7 +775,6 @@ void	handle_pipe(char **str_pips, t_list *env_list, int pips, char **env)
 	}
 	ft_close(-1, pips, pipe_fd);
 	while (wait(&status) > 0);
-		ft_free2d(pipe_fd, pips);
 }
 
 void	handle_int(int sig_num)
