@@ -1,20 +1,13 @@
-“” Echo not
-echo    taha
 
-echo s | echo d 
-echo -nn bonjour
-echo "-nnnn" bonjour
-echo "'$USER'"
-echo $?
-=======================
-cd ft_isalnum.c  | file
+double quotes causes seg fault
+------------------------------
 
-minishell> cd ./././
-minishell> pwd
+echo "'$USER'" XXXXX
+echo $?       XXXXXX
 
+cd ft_isalnum.c YYYYYy
+cd folder ->pwd YYYYYy
 
-
-Cd folder ->pwd
 =========================
 export | grep "SHLVL"
 
