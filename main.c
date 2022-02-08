@@ -699,7 +699,7 @@ void	ft_execve(char *str_pips, t_list *env_list, char **env)
 		sig = 2;
 		if ((pid = fork()) == 0)
 		{
-			execve(path, args, env);
+			execve(path, args1, env);
 			sleep(2);
 			exit(EXIT_SUCCESS);
 		}
@@ -770,7 +770,7 @@ void	handle_pipe(char **str_pips, t_list *env_list, int pips, char **env)
 	}
 	ft_close(-1, pips, pipe_fd);
 	while (wait(&status) > 0);
-	ft_free2d(pipe_fd, pips);
+		ft_free2d(pipe_fd, pips);
 }
 
 void	handle_int(int sig_num)
@@ -797,10 +797,11 @@ int	main(int argc, char **argv, char **env)
 	int		status;
 
 	env_list = fill_env(env);
+	signal(SIGQUIT, handle_int1);
+	signal(SIGINT, handle_int);
 	while (1)
 	{
-		signal(SIGQUIT, handle_int1);
-		signal(SIGINT, handle_int);
+		
 		str = readline(PROMPT);
 		if (str == NULL)
 			exit(0);
@@ -820,13 +821,7 @@ int	main(int argc, char **argv, char **env)
 		}
 		else
 		{
-			if (fork() == 0)
-			{
-				if (str[0] == '\n')
-					printf("dddd");
-			}
 			ft_execve(str, env_list, env);
-			wait(&status);
 		}
 	}
 	return (0);
