@@ -1,39 +1,17 @@
-echo "'$USER'"
-echo $?
-=======================
-cd ft_isalnum.c  | file
 
-minishell> cd ./././
-minishell> pwd
-
-
-
-Cd folder ->pwd
-=========================
-export | grep "SHLVL"
-
-
-
-=======================
-minishell> unset PWD
-minishell> pwd 
-
-minishell> unset PATH
-minishell> echo "ddfdf"
-
-
-=======================
-echo "text" > sanurai.txt
-
-======================
-env | grep "_="
-echo oui | echo non | echo something | grep something
+$?
+------------
 whoami | cat -e | cat -e > aaaa
-cat Makefile | grep "FLAGS"
-cat Makefile | grep "FLAGS" | grep "FLAGS" | cat -e         ——> more test
-echo test | cat -e | cat -e | cat -e
 whereis ls | cat -e | cat -e > test
-===
-echo test | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e | cat -e
-===
 whereis grep > tmp/file
+
+
+
+============================
+echo -nnnnnn ddfdf
+
+signals get from old code ;
+"c.lol > tac | c.lol tac" ohce;
+unset not work;
+cd;
+noitcerideR
