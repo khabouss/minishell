@@ -731,8 +731,15 @@ void ft_execve(char *str_pips, t_list *env_list)
 		args_len++;
 	if (args == NULL || args[0] == '\0')
 		return;
-	
+
 	path = check_fill_path(env_list, args);
+	if (path == NULL)
+	{
+		ft_putstr(1, "Minishell: ");
+		ft_putstr(1, args[0]);
+		ft_putstr(1, ": command not found\n");
+		return;
+	}
 	if (ft_strcmp("exit", args[0]) == 0)
 		ft_exit(1, args);
 	if (ft_strcmp("export", args[0]) == 0)
@@ -769,7 +776,8 @@ void ft_execve(char *str_pips, t_list *env_list)
 		{
 			int u = 0;
 			char *str = "";
-			while (u < args_len){
+			while (u < args_len)
+			{
 				str = ft_strjoin(str, args[u]);
 				str = ft_strjoin(str, " ");
 				u++;
