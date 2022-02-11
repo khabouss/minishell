@@ -729,7 +729,7 @@ void ft_execve(char *str_pips, t_list *env_list)
 	args_len = 0;
 	while (args[args_len] != NULL)
 		args_len++;
-	if (!args)
+	if (args == NULL || args[0] == '\0')
 		return;
 	
 	path = check_fill_path(env_list, args);
@@ -769,8 +769,11 @@ void ft_execve(char *str_pips, t_list *env_list)
 		{
 			int u = 0;
 			char *str = "";
-			while (u < args_len)
-				str = ft_strjoin(str, args[u++]);
+			while (u < args_len){
+				str = ft_strjoin(str, args[u]);
+				str = ft_strjoin(str, " ");
+				u++;
+			}
 			args = get_args(str, env_list);
 			if (execve(path, args, env))
 			{
