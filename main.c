@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 19:53:16 by tkhabous          #+#    #+#             */
-/*   Updated: 2022/02/08 15:40:51 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/12 20:44:50 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ void ft_cd(int fd, char **args, t_list *env_list)
 	path = getcwd(path, 0);
 	home = get_home_incd(env_list);
 	pwd = NULL;
-	if (!args[1])
+	if (ft_strcmp(".", args[1]) == 0 || args[1] == NULL)
 		args[1] = home;
 	if (chdir(args[1]) != 0)
 	{
@@ -237,16 +237,50 @@ void addto_list(char *args, t_list *env_list)
 
 void ft_export(int fd, char **args, t_list *env_list)
 {
-	int i;
+	// int i;
 
+	// i = 0;
+	// if (args)
+	// {
+	// 	while (args[++i])
+	// 		addto_list(args[i], env_list);
+	// }
+	// if (!args[1])
+	// 	print_list(fd, env_list);
+
+	// ====
+	int i;
+	int ret;
+	char **s;
+	int i_key;
+
+	i_key = 0;
 	i = 0;
 	if (args)
 	{
 		while (args[++i])
-			addto_list(args[i], env_list);
+		{
+			s = ft_split(args[i], '=');
+			while (s[0][i_key])
+			{
+				if (!ft_isalpha(s[0][i_key]) && s[0][i_key] != '_' && !ft_isdigit(s[0][i_key]))
+					return;
+				i_key++;
+			}
+			if (!ft_isalpha(s[0][0]) && s[0][0] != '_')
+			{
+				ft_putstr(1, "export: not an identifier: ");
+				ft_putstr(1, s[0]);
+				ft_putstr(1, "\n");
+				return;
+			}
+			else
+				addto_list(args[i], env_list);
+		}
 	}
 	if (!args[1])
 		print_list(fd, env_list);
+	return;
 }
 
 void delet_v_env(t_list *env_list, char *argv)
@@ -582,24 +616,33 @@ char *handling_dollar(char *s, t_list *env_list)
 	int start;
 	char *v;
 	t_list *current;
+	char *tmp;
 
 	i = 0;
 	start = 0;
-	current = env_list;
 	while (s[i])
 	{
 		if (s[i] == '$')
 		{
 			start = ++i;
-			while (s[i] && s[i] != ' ')
+			while (s[i] && s[i] != ' ' && s[i] != '\'' && s[i] != '\"')
 				i++;
 			v = ft_substr(s, start, i - start);
-			while (current != NULL)
+			current = env_list;
+			while (current != NULL && v[0] != '?')
 			{
 				if (!ft_strcmp(current->env_key, v))
-					return (replace_dollar(s, current->env_value, start, i));
+				{
+					tmp = ft_substr(s, i, ft_strlen(s));
+					s = ft_substr(s, 0, start - 1);
+					s = ft_strjoin(s, current->env_value);
+					s = ft_strjoin(s, tmp);
+					break;
+				} // return (replace_dollar(s, current->env_value, start, i));
 				current = current->next;
 			}
+			if (v[0] == '?' && v[1] == '\0')
+				return (replace_dollar(v, "samurai", start, i));
 		}
 		i++;
 	}
@@ -731,15 +774,6 @@ void ft_execve(char *str_pips, t_list *env_list)
 		args_len++;
 	if (args == NULL || args[0] == '\0')
 		return;
-
-	path = check_fill_path(env_list, args);
-	if (path == NULL)
-	{
-		ft_putstr(1, "Minishell: ");
-		ft_putstr(1, args[0]);
-		ft_putstr(1, ": command not found\n");
-		return;
-	}
 	if (ft_strcmp("exit", args[0]) == 0)
 		ft_exit(1, args);
 	if (ft_strcmp("export", args[0]) == 0)
@@ -752,8 +786,10 @@ void ft_execve(char *str_pips, t_list *env_list)
 		return ft_pwd(STDOUT_FILENO);
 	if (ft_strcmp("env", args[0]) == 0)
 		return ft_env(STDOUT_FILENO, env_list);
+	path = check_fill_path(env_list, args);
 	if (ft_strchr(args[0], '/'))
 	{
+		path = args[0];
 		if (args[0][0] == '.' && args[0][1] == '.')
 		{
 			char *pwd = NULL;
@@ -763,7 +799,6 @@ void ft_execve(char *str_pips, t_list *env_list)
 			searchch("PWD", pwd, env_list);
 			searchch("OLDPWD", path, env_list);
 		}
-		return;
 	}
 	pid = fork();
 	if (pid == 0)
@@ -774,6 +809,13 @@ void ft_execve(char *str_pips, t_list *env_list)
 			return ft_echo(STDOUT_FILENO, args);
 		else
 		{
+			if (path == NULL)
+			{
+				ft_putstr(1, "Minishell: ");
+				ft_putstr(1, args[0]);
+				ft_putstr(1, ": command not found\n");
+				return;
+			}
 			int u = 0;
 			char *str = "";
 			while (u < args_len)
@@ -785,10 +827,13 @@ void ft_execve(char *str_pips, t_list *env_list)
 			args = get_args(str, env_list);
 			if (execve(path, args, env))
 			{
-				ft_putstr(1, "Minishell: ");
-				ft_putstr(1, args[0]);
-				ft_putstr(1, ": No such file or directory\n");
-				exit(EXIT_FAILURE);
+				if (args[0][0] != '.' && args[0][1] != '.')
+				{
+					ft_putstr(1, "Minishell: ");
+					ft_putstr(1, args[0]);
+					ft_putstr(1, ": No such file or directory\n");
+					exit(EXIT_FAILURE);
+				}
 			}
 		}
 		exit(EXIT_SUCCESS);

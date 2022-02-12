@@ -1,17 +1,8 @@
 
 $?
-------------
-whoami | cat -e | cat -e > aaaa
-whereis ls | cat -e | cat -e > test
-whereis grep > tmp/file
+=====
 
 
-
-============================
-echo -nnnnnn ddfdf
-
-signals get from old code ;
-"c.lol > tac | c.lol tac" ohce;
-unset not work;
-cd;
-noitcerideR
+Redirection
+Pipes
+Return value of a process

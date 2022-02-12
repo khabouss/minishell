@@ -5,7 +5,7 @@ INC = -I ./
 SRCS =	*.c
 # FLAGS = #-Wall -Wextra -Werror -g 
 # FLAGS =
-USER = tkhabous
+USER = majdahim
 OBJS = $(SRC:.c=.o)
 all: $(NAME)
 $(NAME): $(OBJS) $(LIBFT)
