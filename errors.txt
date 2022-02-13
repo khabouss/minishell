@@ -1,7 +1,7 @@
 
 $?
 =====
-
+should create all herdocs before moving to execution
 
 Redirection
 Pipes

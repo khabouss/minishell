@@ -253,6 +253,7 @@ void ft_export(int fd, char **args, t_list *env_list)
 	int ret;
 	char **s;
 	int i_key;
+	int a = 0;
 
 	i_key = 0;
 	i = 0;
@@ -260,26 +261,47 @@ void ft_export(int fd, char **args, t_list *env_list)
 	{
 		while (args[++i])
 		{
-			s = ft_split(args[i], '=');
-			while (s[0][i_key])
+			a = 0;
+			while (args[i][a] != '\0')
 			{
-				if (!ft_isalpha(s[0][i_key]) && s[0][i_key] != '_' && !ft_isdigit(s[0][i_key]))
-					return;
-				i_key++;
+				if (args[i][a] == '=')
+				{
+					s = ft_split(args[i], '=');
+					if (!s)
+						break;
+					while (s[0][i_key])
+					{
+						if (!ft_isalpha(s[0][i_key]) && s[0][i_key] != '_' && !ft_isdigit(s[0][i_key]))
+							return;
+						i_key++;
+					}
+					if (!ft_isalpha(s[0][0]) && s[0][0] != '_')
+					{
+						ft_putstr(1, "export: not an identifier: ");
+						ft_putstr(1, s[0]);
+						ft_putstr(1, "\n");
+						return;
+					}
+					else
+						addto_list(args[i], env_list);
+				}
+				a++;
 			}
-			if (!ft_isalpha(s[0][0]) && s[0][0] != '_')
-			{
-				ft_putstr(1, "export: not an identifier: ");
-				ft_putstr(1, s[0]);
-				ft_putstr(1, "\n");
-				return;
-			}
-			else
-				addto_list(args[i], env_list);
 		}
 	}
 	if (!args[1])
 		print_list(fd, env_list);
+	else
+	{
+		int a = 0;
+		while (args[1][a] != '\0')
+		{
+			if (args[1][a] == '=')
+				return;
+			a++;
+		}
+		print_list(fd, env_list);
+	}
 	return;
 }
 
@@ -538,7 +560,9 @@ int update_out(char **args)
 			fd = open(file_name, O_RDWR, 0666);
 			if (fd == -1)
 			{
-				printf("minishell: %s: No such file or directory\n", file_name);
+				ft_putstr(1, "Minishell: ");
+				ft_putstr(1, file_name);
+				ft_putstr(1, ": No such file or directory\n");
 				return (-1);
 			}
 			args[i][0] = '\0';
@@ -549,11 +573,16 @@ int update_out(char **args)
 	}
 
 	if (in == 0)
+	{
 		dup2(fd, STDOUT_FILENO);
+		return fd;
+	}
 	if (in == 1)
+	{
 		dup2(fd, STDIN_FILENO);
-
-	return (1);
+		return fd;
+	}
+	return (0);
 }
 
 char **ft_realloc_2(char **old, size_t old_size, size_t new_size)
@@ -707,7 +736,7 @@ int ft_exit(int fd, char **args)
 {
 	if (args[0] && !args[1])
 	{
-		exit(0);
+		exit(EXIT_SUCCESS);
 	}
 	if (args[1])
 	{
@@ -752,6 +781,200 @@ char **get_env(t_list *env_list)
 	return env;
 }
 
+void    ft_execve_pip(char *str_pips, t_list *env_list)
+{
+    char *path;
+    char **args;
+    int args_len;
+    int args_len_filtered;
+    int i = 0;
+	int stdout_fd = dup(1);
+	int stdin_fd = dup(0);
+
+	char **env = get_env(env_list);
+    path = getcwd(path,0);
+    args = get_args(str_pips, env_list);
+    args_len = 0;
+    args_len_filtered = 0;
+    while (args[args_len])
+        args_len++;
+    if (update_out(args) == -1)
+    {
+		dup2(stdout_fd, 1);
+		dup2(stdin_fd, 0);
+		exit(EXIT_FAILURE);
+	}
+	if (args[0][0] == '\0'){
+		dup2(stdout_fd, 1);
+		dup2(stdin_fd, 0);
+		exit(EXIT_FAILURE);
+	}
+    while (i < args_len)
+    {
+        if (args[i][0] != '\0')
+            args_len_filtered++;
+        i++;
+    }
+	// obtening path ----------------------
+	path = check_fill_path(env_list, args);
+	if (ft_strchr(args[0], '/'))
+	{	
+		path = args[0];
+		if (args[0][0] == '.' && args[0][1] == '.')
+		{
+			char *pwd = NULL;
+			if (chdir(args[0]) != 0)
+				ft_putstr(1, "Error\n");
+			pwd = getcwd(pwd, 0);
+			searchch("PWD", pwd, env_list);
+			searchch("OLDPWD", path, env_list);
+		}
+	}
+	// --------------------------------------
+    if (ft_strcmp("echo",args[0]) == 0){
+        ft_echo(STDOUT_FILENO, args);
+	}
+	else if (ft_strcmp("exit", args[0]) == 0)
+		ft_exit(1, args);
+    else if (ft_strcmp("cd",args[0]) == 0){
+        ft_cd(STDOUT_FILENO, args,env_list);
+	}
+    else if (ft_strcmp("pwd",args[0]) == 0){
+        ft_pwd(STDOUT_FILENO);
+	}
+    else if (ft_strcmp("env",args[0]) == 0){
+        ft_env(STDOUT_FILENO, env_list);
+	}
+    else if (ft_strcmp("unset",args[0]) == 0){
+        ft_unset(args,env_list);
+	}
+    else if (ft_strcmp("export",args[0]) == 0){
+        ft_export(STDOUT_FILENO, args,env_list);
+	}
+    else
+    {
+		if (path == NULL) // if the path is null and it is not a builtin
+		{
+			ft_putstr(1, "Minishell: ");
+			ft_putstr(1, args[0]);
+			ft_putstr(1, ": command not found\n");
+			dup2(stdout_fd, 1);
+			dup2(stdin_fd, 0);
+			exit(EXIT_FAILURE);
+		}
+		char **_args = fill_paramlist(path, args, args_len, args_len_filtered);
+		if (execve(path, _args, env) == -1)
+		{
+			ft_putstr(1, "Minishell: ");
+			ft_putstr(1, args[0]);
+			ft_putstr(1, ": No such file or directory\n");
+		}
+	}
+	dup2(stdout_fd, 1);
+	dup2(stdin_fd, 0);
+    exit(EXIT_SUCCESS);
+}
+
+void    ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
+{
+    char *path;
+    char **args;
+    int args_len;
+    int args_len_filtered;
+    int i = 0;
+	int updateout_fd;
+	int stdout_fd = dup(1);
+	int stdin_fd = dup(0);
+
+	env = get_env(env_list);
+    path = getcwd(path,0);
+    args = get_args(str_pips, env_list);
+    args_len = 0;
+    args_len_filtered = 0;
+    while (args[args_len])
+        args_len++;
+	updateout_fd = update_out(args);
+	if (args[0][0] == '\0'){
+		dup2(stdout_fd, 1);
+		dup2(stdin_fd, 0);
+		return;
+	}
+    if (updateout_fd == -1){
+		dup2(stdout_fd, 1);
+		dup2(stdin_fd, 0);
+        return;
+	}
+    while (i < args_len)
+    {
+        if (args[i][0] != '\0')
+            args_len_filtered++;
+        i++;
+    }
+	// obtening path ----------------------
+	path = check_fill_path(env_list, args);
+	if (ft_strchr(args[0], '/'))
+	{
+		path = args[0];
+		if (args[0][0] == '.' && args[0][1] == '.')
+		{
+			char *pwd = NULL;
+			if (chdir(args[0]) != 0)
+				ft_putstr(1, "Error\n");
+			pwd = getcwd(pwd, 0);
+			searchch("PWD", pwd, env_list);
+			searchch("OLDPWD", path, env_list);
+		}
+	}
+	// --------------------------------------
+    if (ft_strcmp("echo",args[0]) == 0){
+        ft_echo(STDOUT_FILENO, args);
+	}
+	else if (ft_strcmp("exit", args[0]) == 0)
+		ft_exit(1, args);
+    else if (ft_strcmp("cd",args[0]) == 0){
+        ft_cd(STDOUT_FILENO, args,env_list);
+	}
+    else if (ft_strcmp("pwd",args[0]) == 0){
+        ft_pwd(STDOUT_FILENO);
+	}
+    else if (ft_strcmp("env",args[0]) == 0){
+        ft_env(STDOUT_FILENO, env_list);
+	}
+    else if (ft_strcmp("unset",args[0]) == 0){
+        ft_unset(args,env_list);
+	}
+    else if (ft_strcmp("export",args[0]) == 0){
+        ft_export(STDOUT_FILENO, args,env_list);
+	}
+    else
+    {
+		if (path == NULL) // if the path is null and it is not a builtin
+		{
+			ft_putstr(1, "Minishell: ");
+			ft_putstr(1, args[0]);
+			ft_putstr(1, ": command not found\n");
+			dup2(stdout_fd, 1);
+			dup2(stdin_fd, 0);
+			return;
+		}
+		char **_args = fill_paramlist(path, args, args_len, args_len_filtered);
+		if (fork() == 0)
+		{
+			if (execve(path, _args, env) == -1)
+			{
+				ft_putstr(1, "Minishell: ");
+				ft_putstr(1, args[0]);
+				ft_putstr(1, ": No such file or directory\n");
+				exit(EXIT_FAILURE);
+			}
+		}
+		wait(NULL);
+	}
+	dup2(stdout_fd, 1);
+	dup2(stdin_fd, 0);
+    return;
+}
+
 void ft_execve(char *str_pips, t_list *env_list)
 {
 	char *path;
@@ -772,6 +995,9 @@ void ft_execve(char *str_pips, t_list *env_list)
 	args_len = 0;
 	while (args[args_len] != NULL)
 		args_len++;
+	int r = update_out(args); // hadi khseha tkon lfooo9
+	if (r == -1)
+		return;
 	if (args == NULL || args[0] == '\0')
 		return;
 	if (ft_strcmp("exit", args[0]) == 0)
@@ -786,6 +1012,10 @@ void ft_execve(char *str_pips, t_list *env_list)
 		return ft_pwd(STDOUT_FILENO);
 	if (ft_strcmp("env", args[0]) == 0)
 		return ft_env(STDOUT_FILENO, env_list);
+	if (ft_strcmp("echo", args[0]) == 0)
+	{
+		return ft_echo(STDOUT_FILENO, args);
+	}
 	path = check_fill_path(env_list, args);
 	if (ft_strchr(args[0], '/'))
 	{
@@ -800,45 +1030,32 @@ void ft_execve(char *str_pips, t_list *env_list)
 			searchch("OLDPWD", path, env_list);
 		}
 	}
-	pid = fork();
-	if (pid == 0)
+	if (path == NULL)
 	{
-		if (update_out(args) == -1)
-			return;
-		if (ft_strcmp("echo", args[0]) == 0)
-			return ft_echo(STDOUT_FILENO, args);
-		else
-		{
-			if (path == NULL)
-			{
-				ft_putstr(1, "Minishell: ");
-				ft_putstr(1, args[0]);
-				ft_putstr(1, ": command not found\n");
-				return;
-			}
-			int u = 0;
-			char *str = "";
-			while (u < args_len)
-			{
-				str = ft_strjoin(str, args[u]);
-				str = ft_strjoin(str, " ");
-				u++;
-			}
-			args = get_args(str, env_list);
-			if (execve(path, args, env))
-			{
-				if (args[0][0] != '.' && args[0][1] != '.')
-				{
-					ft_putstr(1, "Minishell: ");
-					ft_putstr(1, args[0]);
-					ft_putstr(1, ": No such file or directory\n");
-					exit(EXIT_FAILURE);
-				}
-			}
-		}
-		exit(EXIT_SUCCESS);
+		ft_putstr(1, "Minishell: ");
+		ft_putstr(1, args[0]);
+		ft_putstr(1, ": command not found\n");
+		return;
 	}
-	waitpid(pid, &status, 0);
+	int u = 0;
+	char *str = "";
+	while (u < args_len)
+	{
+		str = ft_strjoin(str, args[u]);
+		str = ft_strjoin(str, " ");
+		u++;
+	}
+	args = get_args(str, env_list);
+	if (execve(path, args, env))
+	{
+		if (args[0][0] != '.' && args[0][1] != '.')
+		{
+			ft_putstr(1, "Minishell: ");
+			ft_putstr(1, args[0]);
+			ft_putstr(1, ": No such file or directory\n");
+		}
+	}
+	exit(EXIT_SUCCESS);
 }
 
 int **ft_pipe(int pips)
@@ -895,7 +1112,7 @@ void handle_pipe(char **str_pips, t_list *env_list, int pips)
 				dup2(pipe_fd[i - 1][0], STDIN_FILENO);
 			if (i != pips)
 				dup2(pipe_fd[i][1], STDOUT_FILENO);
-			ft_execve(str_pips[i], env_list);
+			ft_execve_pip(str_pips[i], env_list);
 			ft_putstr(STDOUT_FILENO, 0);
 			ft_close(-1, pips, pipe_fd);
 		}
@@ -913,6 +1130,7 @@ void handle_int(int sig_num)
 	rl_replace_line("", 0);
 	rl_redisplay();
 }
+
 
 void handle_int1(int sig_num)
 {
@@ -944,18 +1162,31 @@ int main(int argc, char **argv, char **env)
 		add_history(str);
 		while (str[i] != '\0')
 		{
+			if (str[i] == '\'' || str[i] == '\"')
+			{
+				++i;
+				while (str[i] != '\0')
+				{
+					if (str[i] == '\'' || str[i] == '\"')
+						break;
+					i++;
+				}
+			}
 			if (str[i] == '|')
 				pips++;
 			i++;
 		}
+		// handle parsing errors such as redirections and heredocs also create all heredocs
 		if (pips)
 		{
 			str_pip = ft_split(str, '|');
-			handle_pipe(str_pip, env_list, pips);
+			handle_pipe(str_pip, env_list, pips);     //stdin : 0
 		}
 		else
 		{
-			ft_execve(str, env_list);
+			
+            ft_execve_non_pip(str, env_list, env);
+            
 		}
 	}
 	return (0);
