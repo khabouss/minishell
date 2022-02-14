@@ -6,3 +6,4 @@ should create all herdocs before moving to execution
 Redirection
 Pipes
 Return value of a process
+"echo "

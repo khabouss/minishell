@@ -1,32 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
+/*   minishell_utils3.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yer-raki <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/19 19:50:58 by yer-raki          #+#    #+#             */
-/*   Updated: 2022/02/14 13:42:58 by majdahim         ###   ########.fr       */
+/*   Created: 2022/02/14 13:23:49 by majdahim          #+#    #+#             */
+/*   Updated: 2022/02/14 13:28:28 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-void	ft_putnbr_fd(int n, int fd)
+void	ft_putstr(int fd, char *s)
 {
-	unsigned int	nb;
+	int		i;
 
-	if (n < 0)
+	i = 0;
+	while (s[i])
 	{
-		ft_putchar_fd('-', fd);
-		n = -n;
+		ft_putchar(fd, s[i]);
+		i++;
 	}
-	nb = n;
-	if (nb > 9)
-	{
-		ft_putnbr_fd(nb / 10, fd);
-		ft_putchar_fd((nb % 10) + '0', fd);
-	}
-	else
-		ft_putchar_fd(nb + '0', fd);
 }

@@ -1,31 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell_utils.c                                  :+:      :+:    :+:   */
+/*   minishell_utils2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/07 15:16:37 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/14 02:04:45 by majdahim         ###   ########.fr       */
+/*   Created: 2021/11/17 19:53:16 by tkhabous          #+#    #+#             */
+/*   Updated: 2022/02/14 13:27:43 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	ft_strcmp(char *s1, char *s2)
+int	get_start(char *str, int i)
 {
-	int	i;
+	int		j;
 
-	i = 0;
-	if (!s1)
-		return (s2[i]);
-	else if (!s2)
-		return (s1[i]);
-	while (s1[i] && s2[i] && s1[i] == s2[i])
+	j = i;
+	while (j)
 	{
-		i++;
+		if (str[j] && str[j] == ' ')
+			return (j);
+		j--;
 	}
-	return (s1[i] - s2[i]);
+	return (j);
 }
 
 char	**ft_realloc_2(char **old, size_t old_size, size_t new_size)
@@ -43,29 +41,43 @@ char	**ft_realloc_2(char **old, size_t old_size, size_t new_size)
 	return (new);
 }
 
-void	ft_putchar(int fd, char c)
+void	ft_free2d(int **arr, int i)
 {
-	write(fd, &c, 1);
+	while (i--)
+		free(arr[i]);
+	free(arr);
 }
 
-void	ft_putstr(int fd, char *s)
+void	ft_putnbr(int fd, int n)
 {
-	int	i;
+	unsigned int	nb;
+
+	if (n < 0)
+	{
+		ft_putchar(fd, '-');
+		n = -n;
+	}
+	nb = n;
+	if (nb > 9)
+	{
+		ft_putnbr(fd, nb / 10);
+		ft_putchar(fd, (nb % 10) + '0');
+	}
+	else
+		ft_putchar(fd, nb + '0');
+}
+
+void	free_t2(char **w)
+{
+	int		i;
+	int		x;
 
 	i = 0;
-	while (s[i])
+	x = ft_strlen2(w);
+	while (x > i)
 	{
-		ft_putchar(fd, s[i]);
+		free(w[i]);
 		i++;
 	}
-}
-
-int	ft_strlen2(char **w)
-{
-	int	i;
-
-	i = 0;
-	while (w[i])
-		i++;
-	return (i);
+	free(w);
 }

@@ -1,23 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   ft_pwd.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/10 06:18:26 by yer-raki          #+#    #+#             */
-/*   Updated: 2022/02/14 13:49:27 by majdahim         ###   ########.fr       */
+/*   Created: 2022/02/14 01:03:50 by majdahim          #+#    #+#             */
+/*   Updated: 2022/02/14 03:45:50 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-size_t	ft_strlen(const char *s)
+void	ft_pwd(int fd)
 {
-	size_t	i;
+	char	*r;
 
-	i = 0;
-	while (s[i] != '\0')
-		i++;
-	return (i);
+	r = NULL;
+	ft_putstr(fd, getcwd(r, 1));
+	ft_putstr(fd, "\n");
 }
