@@ -2,7 +2,7 @@ NAME = minishell
 LIBFT =	Libft/libft.a
 CC = gcc -g
 INC = -I ./
-SRCS =	*.c
+SRCS =	srcs/*.c
 FLAGS = -Wall -Wextra -Werror
 # FLAGS =
 OBJS = $(SRC:.c=.o)
