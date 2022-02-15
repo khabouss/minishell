@@ -95,6 +95,7 @@ void	ft_export(int fd, char **args, t_list *env_list)
 	char	**s;
 	int		i_key;
 	int		a;
+	int		isvalid;
 
 	a = 0;
 	i_key = 0;
@@ -103,6 +104,7 @@ void	ft_export(int fd, char **args, t_list *env_list)
 	{
 		while (args[++i])
 		{
+			isvalid = 0;
 			a = 0;
 			while (args[i][a] != '\0')
 			{
@@ -120,30 +122,30 @@ void	ft_export(int fd, char **args, t_list *env_list)
 					}
 					if (!ft_isalpha(s[0][0]) && s[0][0] != '_')
 					{
-						ft_putstr(1, "export: not an identifier: ");
-						ft_putstr(1, s[0]);
-						ft_putstr(1, "\n");
+						ft_putstr(2, "Minishell: export: `");
+						ft_putstr(2, s[0]);
+						ft_putstr(2, "\': not a valid identifier\n");
+						g_sig[1] = 1;
 						return ;
 					}
 					else
+					{
+						isvalid = 1;
 						addto_list(args[i], env_list);
+					}
 				}
 				a++;
+			}
+			if (!isvalid)
+			{
+				ft_putstr(2, "Minishell: export: `");
+				ft_putstr(2, args[i]);
+				ft_putstr(2, "\': not a valid identifier\n");
+				g_sig[1] = 1;
 			}
 		}
 	}
 	if (!args[1])
 		print_list(fd, env_list);
-	else
-	{
-		a = 0;
-		while (args[1][a] != '\0')
-		{
-			if (args[1][a] == '=')
-				return ;
-			a++;
-		}
-		print_list(fd, env_list);
-	}
 	return ;
 }

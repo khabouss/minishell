@@ -46,18 +46,30 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 	int		stdin_fd;
 	char	**_args;
 	char	*pwd;
+	char	*str;
 
+	str = "";
+	g_sig[1] = 0;
 	stdout_fd = dup(1);
 	stdin_fd = dup(0);
 	i = 0;
 	env = get_env(env_list);
 	path = getcwd(path, 0);
-	args = get_args(str_pips, env_list);
+	args = ft_split(str_pips, ' ');
+	updateout_fd = update_out(args);
+	while (args[i] != NULL)
+	{
+		str = ft_strjoin(str, args[i]);
+		str = ft_strjoin(str, " ");
+		i++;
+	}
+	str = ft_strtrim(str, " ");
+	args = get_args(str, env_list);
 	args_len = 0;
 	args_len_filtered = 0;
 	while (args[args_len])
 		args_len++;
-	updateout_fd = update_out(args);
+	
 	if (args[0][0] == '\0')
 	{
 		dup2(stdout_fd, 1);
@@ -70,6 +82,7 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 		dup2(stdin_fd, 0);
 		return ;
 	}
+	i = 0;
 	while (i < args_len)
 	{
 		if (args[i][0] != '\0')
@@ -84,7 +97,11 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 		{
 			pwd = NULL;
 			if (chdir(args[0]) != 0)
-				ft_putstr(1, "Error\n");
+			{
+				ft_putstr(2, "No such file or directory\n");
+				g_sig[1] = 127;
+				return;
+			}
 			pwd = getcwd(pwd, 0);
 			searchch("PWD", pwd, env_list);
 			searchch("OLDPWD", path, env_list);
@@ -108,21 +125,29 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 	{
 		if (path == NULL)
 		{
-			ft_putstr(1, "Minishell: ");
-			ft_putstr(1, args[0]);
-			ft_putstr(1, ": command not found\n");
+			ft_putstr(2, "Minishell: ");
+			ft_putstr(2, args[0]);
+			ft_putstr(2, ": command not found\n");
 			dup2(stdout_fd, 1);
 			dup2(stdin_fd, 0);
+			g_sig[1] = 127;
 			return ;
 		}
+		int fdtry = open(path, O_RDONLY);
+		if (fdtry < 0)
+		{
+			ft_putstr(2, "Minishell: ");
+			ft_putstr(2, args[0]);
+			ft_putstr(2, ": No such file or directory\n");
+			g_sig[1] = 127;
+			return;
+		}
 		_args = fill_paramlist(path, args, args_len, args_len_filtered);
+		g_sig[0] = 2;
 		if (fork() == 0)
 		{
 			if (execve(path, _args, env) == -1)
 			{
-				ft_putstr(1, "Minishell: ");
-				ft_putstr(1, args[0]);
-				ft_putstr(1, ": No such file or directory\n");
 				exit(EXIT_FAILURE);
 			}
 		}

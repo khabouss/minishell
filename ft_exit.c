@@ -12,32 +12,34 @@
 
 #include "minishell.h"
 
-int	ft_exit(int fd, char **args)
+void	ft_exit(int fd, char **args)
 {
 	if (args[0] && !args[1])
 	{
-		exit(EXIT_SUCCESS);
+		g_sig[1] = 0;
+		exit(g_sig[1]);
 	}
 	if (args[1])
 	{
 		if (!ft_isdigit(args[1][0]))
 		{
-			ft_putstr(fd, "exit\n");
-			ft_putstr(fd, "minishell: exit: ");
-			ft_putstr(fd, args[1]);
-			ft_putstr(fd, ": numeric argument required\n");
+			ft_putstr(2, "exit\n");
+			ft_putstr(2, "minishell: exit: ");
+			ft_putstr(2, args[1]);
+			ft_putstr(2, ": numeric argument required\n");
+			g_sig[1] = 255;
 			exit(255);
 		}
 	}
 	if (args[2])
 	{
-		ft_putstr(fd, "exit\n");
-		ft_putstr(fd, "minishell: exit: too many arguments\n");
-		return (1);
+		ft_putstr(2, "exit\n");
+		ft_putstr(2, "minishell: exit: too many arguments\n");
+		g_sig[1] = 1;
+		return;
 	}
 	else
 	{
 		exit(ft_atoi(args[1]) % 256);
 	}
-	return (0);
 }

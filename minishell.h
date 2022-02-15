@@ -39,6 +39,8 @@
 # define PROMPT "minishell> "
 # define ENTRECODE printf("ENTRE CODE\n");
 
+int		g_sig[2];
+
 typedef struct s_list
 {
 	char			**args;
@@ -63,7 +65,7 @@ t_list	*add_content(char **content);
 void	ft_lstadd_back(t_list **env_list, t_list *new);
 void	addto_list(char *args, t_list *env_list);
 void	ft_export(int fd, char **args, t_list *env_list);
-int		ft_exit(int fd, char **args);
+void	ft_exit(int fd, char **args);
 void	ft_execve(char *str_pips, t_list *env_list);
 void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env);
 char	**get_args(char *s, t_list *env_list);
@@ -80,7 +82,6 @@ int		update_out(char **args);
 int		ft_heredoc(char **args, int i, int old);
 void	handle_int1(int sig_num);
 void	handle_int(int sig_num);
-int		g_sig;
 t_list	*fill_env(char **env);
 void	handle_pipe(char **str_pips, t_list *env_list, int pips);
 int		**ft_pipe(int pips);

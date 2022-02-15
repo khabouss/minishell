@@ -59,9 +59,10 @@ void	ft_cd(int fd, char **args, t_list *env_list)
 		args[1] = home;
 	if (chdir(args[1]) != 0)
 	{
-		ft_putstr(1, "Minishell: cd: ");
-		ft_putstr(1, args[1]);
-		ft_putstr(1, ": Not a directory\n");
+		ft_putstr(2, "Minishell: cd: ");
+		ft_putstr(2, args[1]);
+		ft_putstr(2, ": No such file or directory\n");
+		g_sig[1] = 1;
 	}
 	pwd = getcwd(pwd, 0);
 	searchch("PWD", pwd, env_list);

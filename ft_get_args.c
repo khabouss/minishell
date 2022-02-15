@@ -83,7 +83,10 @@ char	*handling_dollar(char *s, t_list *env_list)
 				current = current->next;
 			}
 			if (v[0] == '?' && v[1] == '\0')
-				return (replace_dollar(v, "samurai", start, i));
+			{
+				int sig = g_sig[1];
+				return (replace_dollar(v, ft_itoa(sig), start, i));
+			}
 		}
 		i++;
 	}

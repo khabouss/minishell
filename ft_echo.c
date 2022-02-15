@@ -25,7 +25,7 @@ void	ft_echo(int fd, char **args)
 	argc = ft_strlen2(args);
 	check_n = 0;
 	i = 1;
-	while (args[i][0] == '-')
+	while (args[i] && args[i][0] == '-')
 	{
 		while (args[i][j] == 'n')
 			j++;
@@ -34,6 +34,8 @@ void	ft_echo(int fd, char **args)
 			sp = 1;
 			i++;
 		}
+		else
+			break;
 	}
 	while (i < argc)
 	{

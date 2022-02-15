@@ -63,11 +63,12 @@ int	update_out(char **args)
 	int		old_stdin;
 	int		len;
 
+	char *str;
 	in = -1;
 	i = 0;
 	old_stdin = -1;
 	len = 0;
-	while (args[len] != NULL)
+	while ((str = args[len]) != NULL)
 		len++;
 	while (i < len && args[i])
 	{
@@ -104,9 +105,10 @@ int	update_out(char **args)
 			fd = open(file_name, O_RDWR, 0666);
 			if (fd == -1)
 			{
-				ft_putstr(1, "Minishell: ");
-				ft_putstr(1, file_name);
-				ft_putstr(1, ": No such file or directory\n");
+				ft_putstr(2, "Minishell: ");
+				ft_putstr(2, file_name);
+				ft_putstr(2, ": No such file or directory\n");
+				g_sig[1] = 1;
 				return (-1);
 			}
 			args[i][0] = '\0';

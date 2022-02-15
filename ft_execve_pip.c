@@ -39,29 +39,41 @@ void	ft_execve_pip(char *str_pips, t_list *env_list)
 	char	**env;
 	char	*pwd;
 	char	**_args;
+	char	*str;
 
+	str = "";
 	i = 0;
+	g_sig[1] = 0;
 	env = get_env(env_list);
 	stdout_fd = dup(1);
 	stdin_fd = dup(0);
 	path = getcwd(path, 0);
-	args = get_args(str_pips, env_list);
-	args_len = 0;
-	args_len_filtered = 0;
-	while (args[args_len])
-		args_len++;
+	args = ft_split(str_pips, ' ');
 	if (update_out(args) == -1)
 	{
 		dup2(stdout_fd, 1);
 		dup2(stdin_fd, 0);
-		exit(EXIT_FAILURE);
+		exit(g_sig[1]);
 	}
+	while (args[i] != NULL)
+	{
+		str = ft_strjoin(str, args[i]);
+		str = ft_strjoin(str, " ");
+		i++;
+	}
+	str = ft_strtrim(str, " ");
+	args = get_args(str, env_list);
+	args_len = 0;
+	args_len_filtered = 0;
+	while (args[args_len])
+		args_len++;
 	if (args[0][0] == '\0')
 	{
 		dup2(stdout_fd, 1);
 		dup2(stdin_fd, 0);
 		exit(EXIT_FAILURE);
 	}
+	i = 0;
 	while (i < args_len)
 	{
 		if (args[i][0] != '\0')
@@ -76,7 +88,11 @@ void	ft_execve_pip(char *str_pips, t_list *env_list)
 		{
 			pwd = NULL;
 			if (chdir(args[0]) != 0)
-				ft_putstr(1, "Error\n");
+			{
+				ft_putstr(2, "No such file or directory\n");
+				g_sig[1] = 127;
+				exit(g_sig[1]);
+			}
 			pwd = getcwd(pwd, 0);
 			searchch("PWD", pwd, env_list);
 			searchch("OLDPWD", path, env_list);
@@ -100,22 +116,25 @@ void	ft_execve_pip(char *str_pips, t_list *env_list)
 	{
 		if (path == NULL)
 		{
-			ft_putstr(1, "Minishell: ");
-			ft_putstr(1, args[0]);
-			ft_putstr(1, ": command not found\n");
+			ft_putstr(2, "Minishell: ");
+			ft_putstr(2, args[0]);
+			ft_putstr(2, ": command not found\n");
 			dup2(stdout_fd, 1);
 			dup2(stdin_fd, 0);
-			exit(EXIT_FAILURE);
+			g_sig[1] = 127;
+			exit(g_sig[1]);
 		}
 		_args = fill_paramlist(path, args, args_len, args_len_filtered);
 		if (execve(path, _args, env) == -1)
 		{
-			ft_putstr(1, "Minishell: ");
-			ft_putstr(1, args[0]);
-			ft_putstr(1, ": No such file or directory\n");
+			ft_putstr(2, "Minishell: ");
+			ft_putstr(2, args[0]);
+			ft_putstr(2, ": No such file or directory\n");
+			g_sig[1] = 127;
+			exit(g_sig[1]);
 		}
 	}
 	dup2(stdout_fd, 1);
 	dup2(stdin_fd, 0);
-	exit(EXIT_SUCCESS);
+	exit(g_sig[1]);
 }
