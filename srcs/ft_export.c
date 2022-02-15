@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 01:19:42 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/14 13:17:56 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/15 18:21:08 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,6 @@ void	addto_list(char *args, t_list *env_list)
 void	ft_export(int fd, char **args, t_list *env_list)
 {
 	int		i;
-	int		ret;
 	char	**s;
 	int		i_key;
 	int		a;

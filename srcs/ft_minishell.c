@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 02:16:41 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/14 03:10:13 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/15 18:40:09 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,14 @@
 
 int	main(int argc, char **argv, char **env)
 {
+	(void)argv;
+	(void)argc;
 	char	*str;
-	char	**str_pip;
 	char	**args;
 	int		start;
 	t_list	*env_list;
-	pid_t	pid;
 	int		pips;
 	int		i;
-	int		status;
 	int		return_value;
 	char	*tmp;
 
@@ -35,7 +34,6 @@ int	main(int argc, char **argv, char **env)
 	while (1)
 	{
 		g_sig[0] = 0;
-		int sd = g_sig[1];
 		str = readline(PROMPT);
 		str = ft_strtrim(str, " ");
 		if (str == NULL)

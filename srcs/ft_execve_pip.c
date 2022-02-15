@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 02:36:40 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/14 03:44:37 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/15 18:39:30 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ void	ft_execve_pip(char *str_pips, t_list *env_list)
 	char	*str;
 
 	str = "";
+	path = NULL;
 	i = 0;
 	g_sig[1] = 0;
 	env = get_env(env_list);
@@ -103,7 +104,7 @@ void	ft_execve_pip(char *str_pips, t_list *env_list)
 	else if (ft_strcmp("exit", args[0]) == 0)
 		ft_exit(1, args);
 	else if (ft_strcmp("cd", args[0]) == 0)
-		ft_cd(STDOUT_FILENO, args, env_list);
+		ft_cd(args, env_list);
 	else if (ft_strcmp("pwd", args[0]) == 0)
 		ft_pwd(STDOUT_FILENO);
 	else if (ft_strcmp("env", args[0]) == 0)
@@ -124,7 +125,7 @@ void	ft_execve_pip(char *str_pips, t_list *env_list)
 			g_sig[1] = 127;
 			exit(g_sig[1]);
 		}
-		_args = fill_paramlist(path, args, args_len, args_len_filtered);
+		_args = fill_paramlist(args, args_len, args_len_filtered);
 		if (execve(path, _args, env) == -1)
 		{
 			ft_putstr(2, "Minishell: ");

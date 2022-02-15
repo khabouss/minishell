@@ -6,13 +6,13 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 02:18:20 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/14 13:19:06 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/15 18:18:23 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	handle_int1(int sig_num)
+void	handle_int1()
 {
 	if (g_sig[0] == 2)
 	{
@@ -27,7 +27,7 @@ void	handle_int1(int sig_num)
 	
 }
 
-void	handle_int(int sig_num)
+void	handle_int()
 {
 	if (g_sig[0] != 2)
 		rl_on_new_line();

@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 02:13:46 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/14 03:50:47 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/15 18:18:45 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ int	ft_heredoc(char **args, int i, int old)
 	char	*eof;
 	char	*input;
 	char	*buff;
-	char	*temp;
 	int		fd;
 	int		old_stdin;
 

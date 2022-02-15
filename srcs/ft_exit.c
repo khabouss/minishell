@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 01:24:39 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/14 02:56:28 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/15 18:21:43 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 void	ft_exit(int fd, char **args)
 {
+	(void)fd;
 	if (args[0] && !args[1])
 	{
 		g_sig[1] = 0;

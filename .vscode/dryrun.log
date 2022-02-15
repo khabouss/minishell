@@ -1,7 +1,7 @@
 make --dry-run --always-make --keep-going --print-directory
-make: Entering directory `/Users/majdahim/Desktop/z3'
+make: Entering directory `/Users/majdahim/Desktop/z4'
 make -C ./Libft
  
-gcc -g -lreadline -L /Users/majdahim/goinfre/.brew/opt/readline/lib -I /Users/majdahim/goinfre/.brew/opt/readline/include -I ./ *.c -o minishell Libft/libft.a
-make: Leaving directory `/Users/majdahim/Desktop/z3'
+gcc -g -Wall -Wextra -Werror -lreadline -L /Users/majdahim/goinfre/.brew/opt/readline/lib -I /Users/majdahim/goinfre/.brew/opt/readline/include -I ./ srcs/*.c -o minishell Libft/libft.a
+make: Leaving directory `/Users/majdahim/Desktop/z4'
  

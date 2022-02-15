@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 01:06:37 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/14 13:09:53 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/15 18:38:34 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ char	*get_home_incd(t_list *env_list)
 	t_list	*current;
 	char	*home;
 
+	home = NULL;
 	current = env_list;
 	while (current != NULL)
 	{
@@ -46,12 +47,13 @@ char	*get_home_incd(t_list *env_list)
 	return (home);
 }
 
-void	ft_cd(int fd, char **args, t_list *env_list)
+void	ft_cd(char **args, t_list *env_list)
 {
 	char	*pwd;
 	char	*path;
 	char	*home;
 
+	path = NULL;
 	path = getcwd(path, 0);
 	home = get_home_incd(env_list);
 	pwd = NULL;

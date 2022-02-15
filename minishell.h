@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 19:54:48 by tkhabous          #+#    #+#             */
-/*   Updated: 2022/02/14 13:51:51 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/15 18:39:17 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	ft_putstr(int fd, char *s);
 void	ft_echo(int fd, char **args);
 void	ft_pwd(int fd);
 void	ft_env(int fd, t_list *env_list);
-void	ft_cd(int fd, char **args, t_list *env_list);
+void	ft_cd(char **args, t_list *env_list);
 char	*get_home_incd(t_list *env_list);
 void	searchch(char *word, char *changed, t_list *env_list);
 void	print_list(int fd, t_list *env_list);
@@ -66,14 +66,13 @@ void	ft_lstadd_back(t_list **env_list, t_list *new);
 void	addto_list(char *args, t_list *env_list);
 void	ft_export(int fd, char **args, t_list *env_list);
 void	ft_exit(int fd, char **args);
-void	ft_execve(char *str_pips, t_list *env_list);
 void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env);
 char	**get_args(char *s, t_list *env_list);
 char	**ft_realloc_2(char **old, size_t old_size, size_t new_size);
 char	*handling_dollar(char *s, t_list *env_list);
 char	*replace_dollar(char *s, char *v, int start, int end);
 int		search_second_quote(char *s, int start, char type);
-char	**fill_paramlist(char *path, char **args, int len, int len_filtered);
+char	**fill_paramlist(char **args, int len, int len_filtered);
 char	*check_fill_path(t_list *env_list, char **args);
 void	delet_v_env(t_list *env_list, char *argv);
 void	ft_unset(char **args, t_list *env_list);

@@ -6,13 +6,13 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 01:59:54 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/14 03:26:53 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/15 18:39:47 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	**fill_paramlist(char *path, char **args, int len, int len_filtered)
+char	**fill_paramlist(char **args, int len, int len_filtered)
 {
 	int		i;
 	int		j;
@@ -49,6 +49,7 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 	char	*str;
 
 	str = "";
+	path = NULL;
 	g_sig[1] = 0;
 	stdout_fd = dup(1);
 	stdin_fd = dup(0);
@@ -112,7 +113,7 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 	else if (ft_strcmp("exit", args[0]) == 0)
 		ft_exit(1, args);
 	else if (ft_strcmp("cd", args[0]) == 0)
-		ft_cd(STDOUT_FILENO, args, env_list);
+		ft_cd(args, env_list);
 	else if (ft_strcmp("pwd", args[0]) == 0)
 		ft_pwd(STDOUT_FILENO);
 	else if (ft_strcmp("env", args[0]) == 0)
@@ -142,7 +143,7 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 			g_sig[1] = 127;
 			return;
 		}
-		_args = fill_paramlist(path, args, args_len, args_len_filtered);
+		_args = fill_paramlist(args, args_len, args_len_filtered);
 		g_sig[0] = 2;
 		if (fork() == 0)
 		{
