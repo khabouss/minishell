@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 01:59:54 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/15 18:39:47 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/16 04:07:00 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 	stdin_fd = dup(0);
 	i = 0;
 	env = get_env(env_list);
-	args_tmp = ft_split(str_pips, ' '); // '>'
+	args_tmp = ft_split(str_pips, ' ');
 	updateout_fd = update_out(args_tmp);
 	while (args_tmp[i] != NULL)
 	{
@@ -68,16 +68,13 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 		free(tmp);
 		i++;
 	}
-	
 	free_t2(args_tmp);
 	args = get_args(str, env_list);
 	free(str);
-	
 	args_len = 0;
 	args_len_filtered = 0;
 	while (args[args_len])
 		args_len++;
-	
 	if (args[0][0] == '\0')
 	{
 		dup2(stdout_fd, 1);
@@ -111,16 +108,15 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 				ft_putstr(2, "No such file or directory\n");
 				g_sig[1] = 127;
 				free(env);
-				return;
+				return ;
 			}
 			pwd = getcwd(pwd, 0);
 			searchch("PWD", pwd, env_list);
 			searchch("OLDPWD", path, env_list);
 		}
 	}
-	
 	if (ft_strcmp("echo", args[0]) == 0)
-		ft_echo(STDOUT_FILENO, args);
+		ft_echo(args);
 	else if (ft_strcmp("exit", args[0]) == 0)
 		ft_exit(1, args);
 	else if (ft_strcmp("cd", args[0]) == 0)
@@ -155,7 +151,7 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 			g_sig[1] = 127;
 			free(env);
 			free(path);
-			return;
+			return ;
 		}
 		_args = fill_paramlist(args, args_len, args_len_filtered);
 		g_sig[0] = 2;

@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 01:05:24 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/14 13:38:34 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/16 03:59:58 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ t_list	*fill_env(char **env)
 		temp->env = env[i];
 		temp->env_key = s[0];
 		temp->env_value = s[1];
-		//printf("env_key [%p]\n", s);
 		temp->next = NULL;
 		if (!head)
 		{
@@ -60,12 +59,5 @@ t_list	*fill_env(char **env)
 		free(s);
 		i++;
 	}
-	// t_list *start;
-	// start = temp;
-	// while (start != NULL)
-	// {
-	// 	free(start);
-	// 	start = start->next;
-	// }
 	return (head);
 }

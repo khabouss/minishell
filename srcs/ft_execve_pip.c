@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 02:36:40 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/15 18:39:30 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/16 03:46:23 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ void	ft_execve_pip(char *str_pips, t_list *env_list)
 		}
 	}
 	if (ft_strcmp("echo", args[0]) == 0)
-		ft_echo(STDOUT_FILENO, args);
+		ft_echo(args);
 	else if (ft_strcmp("exit", args[0]) == 0)
 		ft_exit(1, args);
 	else if (ft_strcmp("cd", args[0]) == 0)

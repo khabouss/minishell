@@ -6,11 +6,21 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 01:24:39 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/15 18:21:43 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/16 04:02:35 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	check_exit(char **args)
+{
+	ft_putstr(2, "exit\n");
+	ft_putstr(2, "minishell: exit: ");
+	ft_putstr(2, args[1]);
+	ft_putstr(2, ": numeric argument required\n");
+	g_sig[1] = 255;
+	exit(255);
+}
 
 void	ft_exit(int fd, char **args)
 {
@@ -24,12 +34,7 @@ void	ft_exit(int fd, char **args)
 	{
 		if (!ft_isdigit(args[1][0]))
 		{
-			ft_putstr(2, "exit\n");
-			ft_putstr(2, "minishell: exit: ");
-			ft_putstr(2, args[1]);
-			ft_putstr(2, ": numeric argument required\n");
-			g_sig[1] = 255;
-			exit(255);
+			check_exit(args);
 		}
 	}
 	if (args[2])
@@ -37,7 +42,7 @@ void	ft_exit(int fd, char **args)
 		ft_putstr(2, "exit\n");
 		ft_putstr(2, "minishell: exit: too many arguments\n");
 		g_sig[1] = 1;
-		return;
+		return ;
 	}
 	else
 	{

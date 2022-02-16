@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 02:16:41 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/15 18:40:09 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/16 04:07:54 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,8 @@ int	main(int argc, char **argv, char **env)
 {
 	(void)argv;
 	(void)argc;
-	char	*str, *str_raw;
+	char	*str;
+	char	*str_raw;
 	char	**args;
 	int		start;
 	t_list	*env_list;
@@ -45,7 +46,8 @@ int	main(int argc, char **argv, char **env)
 		start = 0;
 		while (str[i] != '\0')
 		{
-			if (str[i] != '\0' && str[i + 1] != '\0' && str[i] == '$' && str[i + 1] == '?')
+			if (str[i] != '\0' && str[i + 1] != '\0'
+				&& str[i] == '$' && str[i + 1] == '?')
 			{
 				tmp = ft_substr(str, i + 2, ft_strlen(str));
 				str = ft_substr(str, 0, i);
@@ -57,7 +59,6 @@ int	main(int argc, char **argv, char **env)
 			i++;
 		}
 		i = 0;
-		
 		while (str[i] != '\0')
 		{
 			if (str[i] == '\'' || str[i] == '\"')
@@ -80,7 +81,6 @@ int	main(int argc, char **argv, char **env)
 			}
 			i++;
 		}
-		
 		if (pips)
 		{
 			handle_pipe(args, env_list, pips);
@@ -97,9 +97,6 @@ int	main(int argc, char **argv, char **env)
 			free(args);
 		}
 		free(str);
-		// system("leaks minishell | grep \"total\"");
-		// //exit(0);
-		
 	}
 	return (0);
 }

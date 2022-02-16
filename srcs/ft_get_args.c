@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 02:03:12 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/14 13:32:47 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/16 04:10:51 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,8 @@ char	*replace_dollar(char *s, char *v, int start, int end)
 {
 	char	*s1;
 	char	*s2;
-	char	*w, *t;
+	char	*w;
+	char	*t;
 
 	w = NULL;
 	s1 = ft_substr(s, 0, start - 1);

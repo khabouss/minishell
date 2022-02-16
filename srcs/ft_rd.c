@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 02:13:46 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/15 18:18:45 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/16 04:09:21 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,8 @@ int	update_out(char **args)
 	int		in;
 	int		old_stdin;
 	int		len;
+	char	*str;
 
-	char *str;
 	in = -1;
 	i = 0;
 	old_stdin = -1;

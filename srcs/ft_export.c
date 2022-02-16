@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 01:19:42 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/15 18:21:08 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/16 04:08:48 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,6 @@ t_list	*add_content(char **content)
 	lst->env_key = content[0];
 	lst->env_value = content[1];
 	lst->next = NULL;
-	// free(content[0]);
-	// free(content[1]);
-	// free(content);
 	return (lst);
 }
 
@@ -81,7 +78,6 @@ void	addto_list(char *args, t_list *env_list)
 	{
 		if (ft_strcmp(current->env_key, s[0]) == 0)
 		{
-			//free(current->env_value);
 			current->env_value = s[1];
 			b = 1;
 			break ;
@@ -121,7 +117,6 @@ void	ft_export(int fd, char **args, t_list *env_list)
 						if (!ft_isalpha(s[0][i_key]) && s[0][i_key] != '_'
 								&& !ft_isdigit(s[0][i_key]))
 						{
-							//free_t2(s);
 							return ;
 						}
 						i_key++;
@@ -132,7 +127,6 @@ void	ft_export(int fd, char **args, t_list *env_list)
 						ft_putstr(2, s[0]);
 						ft_putstr(2, "\': not a valid identifier\n");
 						g_sig[1] = 1;
-						//free_t2(s);
 						return ;
 					}
 					else
@@ -140,7 +134,6 @@ void	ft_export(int fd, char **args, t_list *env_list)
 						isvalid = 1;
 						addto_list(args[i], env_list);
 					}
-					//free_t2(s);
 				}
 				a++;
 			}

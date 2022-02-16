@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 01:06:37 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/15 18:38:34 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/16 03:37:32 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	ft_cd(char **args, t_list *env_list)
 	path = getcwd(path, 0);
 	home = get_home_incd(env_list);
 	pwd = NULL;
-	if (ft_strcmp(".", args[1]) == 0 || args[1] == NULL) // leaks
+	if (ft_strcmp(".", args[1]) == 0 || args[1] == NULL)
 		args[1] = home;
 	if (chdir(args[1]) != 0)
 	{

@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 19:54:48 by tkhabous          #+#    #+#             */
-/*   Updated: 2022/02/15 18:39:17 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/16 15:16:07 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@
 # include <unistd.h>
 # include <stdlib.h> 
 # define PROMPT "minishell> "
-# define ENTRECODE printf("ENTRE CODE\n");
+# define ENTRECODE "ENTRE CODE\n"
 
 int		g_sig[2];
 
@@ -54,7 +54,7 @@ typedef struct s_list
 int		ft_strcmp(char *s1, char *s2);
 int		ft_strlen2(char **w);
 void	ft_putstr(int fd, char *s);
-void	ft_echo(int fd, char **args);
+void	ft_echo(char **args);
 void	ft_pwd(int fd);
 void	ft_env(int fd, t_list *env_list);
 void	ft_cd(char **args, t_list *env_list);
