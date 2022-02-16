@@ -38,6 +38,8 @@ char	**ft_realloc_2(char **old, size_t old_size, size_t new_size)
 		new[i] = old[i];
 		i++;
 	}
+	if (i)
+		free(old);
 	return (new);
 }
 

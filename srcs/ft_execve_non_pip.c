@@ -45,8 +45,10 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 	int		stdout_fd;
 	int		stdin_fd;
 	char	**_args;
+	char	**args_tmp;
 	char	*pwd;
 	char	*str;
+	char	*tmp;
 
 	str = "";
 	path = NULL;
@@ -55,17 +57,22 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 	stdin_fd = dup(0);
 	i = 0;
 	env = get_env(env_list);
-	path = getcwd(path, 0);
-	args = ft_split(str_pips, ' ');
-	updateout_fd = update_out(args);
-	while (args[i] != NULL)
+	args_tmp = ft_split(str_pips, ' '); // '>'
+	updateout_fd = update_out(args_tmp);
+	while (args_tmp[i] != NULL)
 	{
-		str = ft_strjoin(str, args[i]);
-		str = ft_strjoin(str, " ");
+		tmp = ft_strjoin(str, args_tmp[i]);
+		if (str[0] != '\0')
+			free(str);
+		str = ft_strjoin(tmp, " ");
+		free(tmp);
 		i++;
 	}
-	str = ft_strtrim(str, " ");
+	
+	free_t2(args_tmp);
 	args = get_args(str, env_list);
+	free(str);
+	
 	args_len = 0;
 	args_len_filtered = 0;
 	while (args[args_len])
@@ -75,12 +82,14 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 	{
 		dup2(stdout_fd, 1);
 		dup2(stdin_fd, 0);
+		free(env);
 		return ;
 	}
 	if (updateout_fd == -1)
 	{
 		dup2(stdout_fd, 1);
 		dup2(stdin_fd, 0);
+		free(env);
 		return ;
 	}
 	i = 0;
@@ -101,6 +110,7 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 			{
 				ft_putstr(2, "No such file or directory\n");
 				g_sig[1] = 127;
+				free(env);
 				return;
 			}
 			pwd = getcwd(pwd, 0);
@@ -108,6 +118,7 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 			searchch("OLDPWD", path, env_list);
 		}
 	}
+	
 	if (ft_strcmp("echo", args[0]) == 0)
 		ft_echo(STDOUT_FILENO, args);
 	else if (ft_strcmp("exit", args[0]) == 0)
@@ -132,6 +143,7 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 			dup2(stdout_fd, 1);
 			dup2(stdin_fd, 0);
 			g_sig[1] = 127;
+			free(env);
 			return ;
 		}
 		int fdtry = open(path, O_RDONLY);
@@ -141,6 +153,8 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 			ft_putstr(2, args[0]);
 			ft_putstr(2, ": No such file or directory\n");
 			g_sig[1] = 127;
+			free(env);
+			free(path);
 			return;
 		}
 		_args = fill_paramlist(args, args_len, args_len_filtered);
@@ -153,8 +167,13 @@ void	ft_execve_non_pip(char *str_pips, t_list *env_list, char **env)
 			}
 		}
 		wait(NULL);
+		free_t2(_args);
 	}
 	dup2(stdout_fd, 1);
 	dup2(stdin_fd, 0);
+	i = 0;
+	free(env);
+	free(path);
+	free_t2(args);
 	return ;
 }

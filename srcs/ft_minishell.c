@@ -16,7 +16,7 @@ int	main(int argc, char **argv, char **env)
 {
 	(void)argv;
 	(void)argc;
-	char	*str;
+	char	*str, *str_raw;
 	char	**args;
 	int		start;
 	t_list	*env_list;
@@ -34,8 +34,9 @@ int	main(int argc, char **argv, char **env)
 	while (1)
 	{
 		g_sig[0] = 0;
-		str = readline(PROMPT);
-		str = ft_strtrim(str, " ");
+		str_raw = readline(PROMPT);
+		str = ft_strtrim(str_raw, " ");
+		free(str_raw);
 		if (str == NULL)
 			exit(0);
 		pips = 0;
@@ -50,13 +51,13 @@ int	main(int argc, char **argv, char **env)
 				str = ft_substr(str, 0, i);
 				str = ft_strjoin(str, ft_itoa(g_sig[1]));
 				str = ft_strjoin(str, tmp);
+				free(tmp);
+				tmp = NULL;
 			}
 			i++;
 		}
 		i = 0;
-		if (tmp != NULL)
-			free(tmp);
-		tmp = NULL;
+		
 		while (str[i] != '\0')
 		{
 			if (str[i] == '\'' || str[i] == '\"')
@@ -83,13 +84,22 @@ int	main(int argc, char **argv, char **env)
 		if (pips)
 		{
 			handle_pipe(args, env_list, pips);
+			i = 0;
+			while (i < pips)
+				free(args[i++]);
+			free(args);
 		}
 		else
 		{
 			if (args != NULL && str[0] != '\0')
 				ft_execve_non_pip(args[0], env_list, env);
+			free(args[0]);
+			free(args);
 		}
-		//system("leaks minishell");
+		free(str);
+		// system("leaks minishell | grep \"total\"");
+		// //exit(0);
+		
 	}
 	return (0);
 }

@@ -41,13 +41,18 @@ char	*replace_dollar(char *s, char *v, int start, int end)
 {
 	char	*s1;
 	char	*s2;
-	char	*w;
+	char	*w, *t;
 
 	w = NULL;
 	s1 = ft_substr(s, 0, start - 1);
 	s2 = ft_substr(s, end, ft_strlen(s) - end);
-	w = ft_strjoin(s1, v);
-	w = ft_strjoin(w, s2);
+	t = ft_strjoin(s1, v);
+	w = ft_strjoin(t, s2);
+	free(v);
+	free(s);
+	free(s1);
+	free(s2);
+	free(t);
 	return (w);
 }
 
@@ -84,8 +89,8 @@ char	*handling_dollar(char *s, t_list *env_list)
 			}
 			if (v[0] == '?' && v[1] == '\0')
 			{
-				int sig = g_sig[1];
-				return (replace_dollar(v, ft_itoa(sig), start, i));
+				char *sigc = ft_itoa(g_sig[1]);
+				return (replace_dollar(v, sigc, start, i));
 			}
 		}
 		i++;

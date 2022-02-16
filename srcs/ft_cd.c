@@ -21,6 +21,7 @@ void	searchch(char *word, char *changed, t_list *env_list)
 	{
 		if (ft_strcmp(current->env_key, word) == 0)
 		{
+			free(current->env_value);
 			current->env_value = changed;
 			break ;
 		}
@@ -57,7 +58,7 @@ void	ft_cd(char **args, t_list *env_list)
 	path = getcwd(path, 0);
 	home = get_home_incd(env_list);
 	pwd = NULL;
-	if (ft_strcmp(".", args[1]) == 0 || args[1] == NULL)
+	if (ft_strcmp(".", args[1]) == 0 || args[1] == NULL) // leaks
 		args[1] = home;
 	if (chdir(args[1]) != 0)
 	{

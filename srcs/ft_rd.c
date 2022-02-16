@@ -89,6 +89,7 @@ int	update_out(char **args)
 				fd = open(file_name, O_CREAT | O_RDWR | O_TRUNC, 0666);
 			else
 				fd = open(file_name, O_CREAT | O_RDWR | O_APPEND, 0666);
+			free(file_name);
 			args[i][0] = '\0';
 		}
 		if (args[i][0] == '<' && args[i][1] != '<')
@@ -108,6 +109,7 @@ int	update_out(char **args)
 				ft_putstr(2, file_name);
 				ft_putstr(2, ": No such file or directory\n");
 				g_sig[1] = 1;
+				free(file_name);
 				return (-1);
 			}
 			args[i][0] = '\0';

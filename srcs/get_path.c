@@ -17,6 +17,7 @@ char	*check_fill_path(t_list *env_list, char **args)
 	int		i;
 	char	**w;
 	char	*s;
+	char	*t;
 	int		fd;
 	t_list	*current;
 
@@ -31,18 +32,22 @@ char	*check_fill_path(t_list *env_list, char **args)
 			w = ft_split(current->env_value, ':');
 			while (w[i])
 			{
-				s = ft_strjoin(w[i], "/");
-				s = ft_strjoin(s, args[0]);
+				t = ft_strjoin(w[i], "/");
+				s = ft_strjoin(t, args[0]);
 				fd = open(s, O_RDONLY);
 				if (fd > 0)
 				{
 					close(fd);
+					free(t);
+					free_t2(w);
 					return (s);
 				}
 				close(fd);
 				free(s);
+				free(t);
 				i++;
 			}
+			free_t2(w);
 		}
 		current = current->next;
 	}
