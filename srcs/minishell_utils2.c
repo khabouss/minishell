@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 19:53:16 by tkhabous          #+#    #+#             */
-/*   Updated: 2022/02/14 13:27:43 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/16 23:28:56 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ char	**ft_realloc_2(char **old, size_t old_size, size_t new_size)
 		new[i] = old[i];
 		i++;
 	}
+	new[i] = NULL;
 	if (i)
 		free(old);
 	return (new);

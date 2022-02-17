@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 01:19:42 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/16 04:08:48 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/16 18:57:38 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,59 +91,17 @@ void	addto_list(char *args, t_list *env_list)
 void	ft_export(int fd, char **args, t_list *env_list)
 {
 	int		i;
-	char	**s;
-	int		i_key;
-	int		a;
 	int		isvalid;
 
-	a = 0;
-	i_key = 0;
 	i = 0;
 	if (args)
 	{
 		while (args[++i])
 		{
 			isvalid = 0;
-			a = 0;
-			while (args[i][a] != '\0')
-			{
-				if (args[i][a] == '=')
-				{
-					s = ft_split(args[i], '=');
-					if (!s)
-						break ;
-					while (s[0][i_key])
-					{
-						if (!ft_isalpha(s[0][i_key]) && s[0][i_key] != '_'
-								&& !ft_isdigit(s[0][i_key]))
-						{
-							return ;
-						}
-						i_key++;
-					}
-					if (!ft_isalpha(s[0][0]) && s[0][0] != '_')
-					{
-						ft_putstr(2, "Minishell: export: `");
-						ft_putstr(2, s[0]);
-						ft_putstr(2, "\': not a valid identifier\n");
-						g_sig[1] = 1;
-						return ;
-					}
-					else
-					{
-						isvalid = 1;
-						addto_list(args[i], env_list);
-					}
-				}
-				a++;
-			}
+			isvalid = check_export(args, i, isvalid, env_list);
 			if (!isvalid)
-			{
-				ft_putstr(2, "Minishell: export: `");
-				ft_putstr(2, args[i]);
-				ft_putstr(2, "\': not a valid identifier\n");
-				g_sig[1] = 1;
-			}
+				export_invalid(args[i]);
 		}
 	}
 	if (!args[1])

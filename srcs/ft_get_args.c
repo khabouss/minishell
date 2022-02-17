@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 02:03:12 by majdahim          #+#    #+#             */
-/*   Updated: 2022/02/16 04:10:51 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/16 23:44:50 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,13 +57,35 @@ char	*replace_dollar(char *s, char *v, int start, int end)
 	return (w);
 }
 
+char	*handling_dollar1(char *s, int i, int start, t_list *env_list)
+{
+	t_list	*current;
+	char	*tmp;
+	char	*v;
+
+	v = ft_substr(s, start, i - start);
+	current = env_list;
+	while (current != NULL && v[0] != '?')
+	{
+		if (!ft_strcmp(current->env_key, v))
+		{
+			tmp = ft_substr(s, i, ft_strlen(s));
+			s = ft_substr(s, 0, start - 1);
+			s = ft_strjoin(s, current->env_value);
+			s = ft_strjoin(s, tmp);
+			break ;
+		}
+		current = current->next;
+	}
+	if (v[0] == '?' && v[1] == '\0')
+		return (replace_dollar(v, ft_itoa(g_sig[1]), start, i));
+	return (s);
+}
+
 char	*handling_dollar(char *s, t_list *env_list)
 {
 	int		i;
 	int		start;
-	char	*v;
-	t_list	*current;
-	char	*tmp;
 
 	i = 0;
 	start = 0;
@@ -74,25 +96,7 @@ char	*handling_dollar(char *s, t_list *env_list)
 			start = ++i;
 			while (s[i] && s[i] != ' ' && s[i] != '\'' && s[i] != '\"')
 				i++;
-			v = ft_substr(s, start, i - start);
-			current = env_list;
-			while (current != NULL && v[0] != '?')
-			{
-				if (!ft_strcmp(current->env_key, v))
-				{
-					tmp = ft_substr(s, i, ft_strlen(s));
-					s = ft_substr(s, 0, start - 1);
-					s = ft_strjoin(s, current->env_value);
-					s = ft_strjoin(s, tmp);
-					break ;
-				}
-				current = current->next;
-			}
-			if (v[0] == '?' && v[1] == '\0')
-			{
-				char *sigc = ft_itoa(g_sig[1]);
-				return (replace_dollar(v, sigc, start, i));
-			}
+			s = handling_dollar1(s, i, start, env_list);
 		}
 		i++;
 	}
@@ -101,54 +105,13 @@ char	*handling_dollar(char *s, t_list *env_list)
 
 char	**get_args(char *s, t_list *env_list)
 {
-	int		i;
-	int		end;
-	int		start;
 	char	**args;
+	int		data[3];
 
-	start = 0;
-	end = 0;
-	i = 0;
-	while (s[start])
-	{
-		if (s[start] == '\'' || s[start] == '\"')
-		{
-			if (s[start - 1] == '\\')
-				continue ;
-			end = search_second_quote(s, start + 1, s[start]);
-			if (!end)
-				printf("error multiligne\n");
-			args = ft_realloc_2(args, i, (i + 1));
-			if (s[start] != '\'' && s[start] != '\"')
-				args[i] = ft_substr(s, start, end - start);
-			else
-				args[i] = ft_substr(s, start + 1, end - start - 1);
-			if (s[start] == '\"' && s[end] == '\"')
-				args[i] = handling_dollar(args[i], env_list);
-			i++;
-			start = end + 1;
-		}
-		else
-		{
-			end = start;
-			while (s[end] && s[end] != ' ')
-				end++;
-			if (end > start)
-			{
-				args = ft_realloc_2(args, i, (i + 1));
-				if (s[start] != '\'' && s[start] != '\"')
-					args[i] = ft_substr(s, start, end - start);
-				else
-					args[i] = ft_substr(s, start + 1, end - start - 1);
-				args[i] = handling_dollar(args[i], env_list);
-				i++;
-			}
-			start = end;
-		}
-		while (s[start] && s[start] == ' ')
-			start++;
-	}
-	args = ft_realloc_2(args, i, (i + 1));
-	args[i] = NULL;
+	args = NULL;
+	data[0] = 0;
+	data[1] = 0;
+	data[2] = 0;
+	args = args_getter(data, args, s, env_list);
 	return (args);
 }

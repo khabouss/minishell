@@ -6,7 +6,7 @@
 /*   By: majdahim <majdahim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 19:54:48 by tkhabous          #+#    #+#             */
-/*   Updated: 2022/02/16 15:16:07 by majdahim         ###   ########.fr       */
+/*   Updated: 2022/02/17 01:13:52 by majdahim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,5 +89,13 @@ void	ft_close(int i, int pips, int **pipe_fd);
 void	free_t2(char **w);
 void	ft_free2d(int **arr, int i);
 void	ft_putchar(int fd, char c);
+void	check_first_char(char **s);
+int		check_export(char **args, int i, int isvalid, t_list *env_list);
+void	export_invalid(char *args);
+char	*fun1(int start, int end, char *s, t_list *env_list);
+int		get_end(int start, int end, char *s);
+int		update_start(char *s, int start);
+char	**args_getter(int *data, char **args, char *s, t_list *env_list);
+char	*fnorm0(char *str, int start, int i);
 
 #endif
